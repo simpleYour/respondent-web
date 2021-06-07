@@ -13,8 +13,8 @@ export default {
   // 查询符合条件的单词列表信息
   list(query, current, size) {
     return request({
-      url: `${BASE_URL}/${current}/${size}`,
-      method: "get",
+      url: `${BASE_URL}/list/${current}/${size}`,
+      method: "post",
       data: query
     })
   },

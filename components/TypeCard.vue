@@ -3,7 +3,9 @@
 
   <div class="container">
     <div class="title">
-      {{ wordType.typeName }}
+      <nuxt-link :to="'/word/'+wordTypeId">
+        {{ wordType.typeName }}
+      </nuxt-link>
     </div>
     <div>
       <!-- todo 用以展示最近的答题记录信息(图表的形式) -->
@@ -41,7 +43,8 @@ export default {
     wordTypeApi.getVoById(this.wordTypeId).then(res => {
       this.wordType = res.data
     })
-  }
+  },
+  methods: {}
 }
 </script>
 
