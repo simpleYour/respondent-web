@@ -30,6 +30,12 @@ export default {
       method: "put",
       data: word
     })
+  },
+  delete(id) {
+    return request({
+      url: `${BASE_URL}/${id}`,
+      method: "delete"
+    })
   }
 
 

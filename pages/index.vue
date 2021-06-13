@@ -1,6 +1,11 @@
 <template>
   <div class="container">
-    <type-card :word-type-id="typeId"></type-card>
+
+    <div class="types">
+      <type-card :word-type-id="typeId"></type-card>
+
+    </div>
+
 
   </div>
 </template>
@@ -21,5 +26,17 @@ export default {
 </script>
 
 <style>
+
+.container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.types{
+  display: flex;
+  flex-direction: row;
+}
 
 </style>

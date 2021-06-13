@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="header">
-      <nuxt-link to="/home" tag="div">
+      <nuxt-link to="/" tag="div">
         <i class="el-icon-house"></i>
         首页
       </nuxt-link>
@@ -53,7 +53,7 @@ export default {
   background-color: rgb(241, 241, 241);
   width: 80%;
   margin: 0 auto;
-  height: 1000px;
+  /*height: 1000px;*/
   position: relative;
   margin-top: -10px;
 }
