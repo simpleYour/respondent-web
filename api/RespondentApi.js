@@ -5,7 +5,7 @@ const BASE_URL = "/processor";
 export default {
   init(typeId, mode, num, dateScope) {
     return request({
-      url: `${BASE_URL}/${typeId}/${mode}/${num}/${dateScope}`,
+      url: `${BASE_URL}/init/${typeId}/${mode}/${num}/${dateScope}`,
       method: "get"
     })
   },

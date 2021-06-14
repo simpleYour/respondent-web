@@ -5,7 +5,7 @@
         <i class="el-icon-house"></i>
         首页
       </nuxt-link>
-      <nuxt-link to="/answer" tag="div">
+      <nuxt-link to="/respondent" tag="div">
         <i class="el-icon-notebook-2"></i>
         答题
       </nuxt-link>
@@ -83,6 +83,7 @@ export default {
 
 .main{
   margin-top: 10px;
+  width: 100%;
 }
 
 </style>

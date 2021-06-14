@@ -16,8 +16,10 @@
     <!-- 信息展示的一个table -->
     <el-table
       :data="records"
-      style="width: 100%"
+      style="width: 100%;"
+      :fit="true"
       max-height="800"
+      ref="table"
       stripe>
       <el-table-column label="序号" align="center">
         <template slot-scope="scope">
@@ -26,7 +28,11 @@
       </el-table-column>
       <el-table-column
         prop="word"
+        min-width="100"
         label="单词">
+        <template slot-scope="scope">
+          <a :href="'http://www.youdao.com/w/eng/'+scope.row.word" target="_blank">{{ scope.row.word }}</a>
+        </template>
       </el-table-column>
       <el-table-column
         label="中文解释"
@@ -46,12 +52,11 @@
       <el-table-column
         label="发音播放">
         <template slot-scope="scope">
-<!--          <i class="el-icon-video-play" @click="playAudio(scope.row.voicePath)">
-          </i>-->
-          <el-image @click="playAudio(scope.row.voicePath)"
-            style="width: 25px; "
-            src="/voice.png"
-            ></el-image>
+          <el-image @click="playAudio(scope.row.voicePath)" @mouseenter="playAudio(scope.row.voicePath)"
+                    style="width: 25px; "
+                    class="play-icon"
+                    src="/voice.png"
+          ></el-image>
         </template>
       </el-table-column>
       <el-table-column
@@ -96,7 +101,7 @@
     </el-dialog>
 
     <!-- 音频播放audio -->
-    <audio ref="audio">
+    <audio ref="audio" src="http://dict.youdao.com/dictvoice?audio=explore">
       <!--              <source :src="scope.row.voicePath" type="audio/mpeg">-->
       您的浏览器不支持 audio 元素。
     </audio>
@@ -112,7 +117,7 @@ export default {
   data() {
     return {
       current: 1,
-      size: 100,
+      size: 10,
       records: [{
         "count": 0,
         "deleted": 0,
@@ -134,34 +139,55 @@ export default {
       // 修改单词的对话框 是否显示
       modifyDialog: false,
       // 当前将要被修改的单词
-      currentModifyWord: {}
+      currentModifyWord: {},
+      // 是否正在向后端请求数据中
+      loading: false,
+      // 判断是否已经加载到了最后一页了
+      isEnd: false
     }
   },
   methods: {
     // 依据相关的条件 加载获取这个单词本的单词信息
-    load() {
+    getData() {
+      if (this.isEnd && this.current > 1) {
+        // 如果已经加载到了最后一页,则不继续向下加载了
+        // 之所以要判断current>1 是为了防止条件搜索失效
+        this.$message("没有更多数据了!")
+        return
+      }
+
+      this.loading = true
       WordApi.list(this.query, this.current, this.size).then(res => {
         //  这里应给是pushAll
         res.data.records.forEach(item => {
           this.records.push(item)
         })
+
+        // 以此判断是否已经到了最后一页
+        this.isEnd = res.data.current >= res.data.pages
+
+        this.loading = false
       })
     },
     playAudio(voicePath) {
-      this.$refs.audio.src = voicePath
-      this.$refs.audio.play()
+      let audio = this.$refs.audio
+      // 只有当上一个音频已经播放结束了,才会去播放下一个音频
+      // if (audio.ended) {
+      audio.src = voicePath
+      audio.play()
+      // }
     },
     // 向后端服务器查询符合条件的数据集合
     search() {
       this.records = []
       // 将当前页面重置回到第一页
       this.current = 1
-      this.load()
+      this.getData()
     },
     // 依据现有条件,加载下一页的数据
     nextPage() {
       ++this.current
-      this.load()
+      this.getData()
     },
     // 修改单词
     modifyWord(word) {
@@ -209,12 +235,30 @@ export default {
           message: '已取消删除'
         });
       });
+    },
+    // table滚动条滚动事件
+    scroll() {
+      let tableBodyDom = this.$refs.table.bodyWrapper
+      tableBodyDom.addEventListener('scroll', () => {
+        // 滚动条总高度 减去 窗口高度 减去 已卷入的高度 小于 50px 就加载新数据
+        if ((tableBodyDom.scrollHeight - tableBodyDom.clientHeight - tableBodyDom.scrollTop) < 50) {
+          // 进行一个节流限制,如果是正在加载中,则不进行数据的请求加载
+          if (!this.loading) {
+            ++this.current
+            this.getData()
+          }
+        }
+      })
     }
   },
-  created() {
+  created: function () {
     this.query.wordTypeId = this.typeId
     this.records = []
-    this.load()
+    this.getData()
+  },
+  mounted() {
+    // 给table添加滚动事件
+    this.$refs.table.bodyWrapper.addEventListener("scroll", this.scroll)
   },
   validate({params}) {
     // 传递过来的单词本id必须是number类型
@@ -242,5 +286,24 @@ export default {
 /*.container > * {*/
 /*  width: 100%;*/
 /*}*/
+
+/* 播放音频图标,鼠标悬浮时的css样式 */
+.play-icon:hover {
+  background-color: aquamarine;
+}
+
+a{
+  text-decoration: none;
+}
+
+a:visited,a:link{
+  color: -moz-default-color;
+}
+
+a:hover{
+  text-decoration: aquamarine;
+}
+
+
 
 </style>
