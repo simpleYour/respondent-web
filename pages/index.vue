@@ -1,12 +1,13 @@
 <template>
-  <div class="container">
+  <div>
+    <div class="container">
 
-    <div class="types">
-      <type-card :word-type-id="typeId"></type-card>
+      <div class="types">
+        <type-card :word-type-id="typeId"></type-card>
+
+      </div>
 
     </div>
-
-
   </div>
 </template>
 
@@ -34,7 +35,7 @@ export default {
   justify-content: flex-start;
 }
 
-.types{
+.types {
   display: flex;
   flex-direction: row;
 }

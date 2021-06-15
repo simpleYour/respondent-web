@@ -1,44 +1,48 @@
 <template>
   <!-- 答题过程中的页面 -->
+  <div class="context">
 
-  <div class="container">
-    <!-- 已回答内容区域 -->
-    <div class="answer" ref="scroll">
-      <!--      <answer-card :id="result.current.id" :question="result.current.word" :answer="result.current.mean"
-                         :is-play="true" :voice-url="result.current.voicePath"></answer-card>-->
-      <div v-for="item in history">
-        <!-- todo 这里需要去展现一下惩罚的一个次数 -->
-        <answer-card :id="item.id" :question="item.question" :answer="item.answer" :user-answer="item.userAnswer"
-                     :is-play="item.isPlay" :voice-path="item.voicePath" :is-right="item.isRight"
-                     :punishment="item.punishment"></answer-card>
-        <div class="empty"></div>
+    <div class="main">
+      <!-- 已回答内容区域 -->
+      <div class="answer" ref="scroll">
+        <!--      <answer-card :id="result.current.id" :question="result.current.word" :answer="result.current.mean"
+                           :is-play="true" :voice-url="result.current.voicePath"></answer-card>-->
+        <div v-for="item in history">
+          <answer-card :id="item.id" :question="item.question" :answer="item.answer" :user-answer="item.userAnswer"
+                       :is-play="item.isPlay" :voice-path="item.voicePath" :is-right="item.isRight"
+                       :punishment="item.punishment"></answer-card>
+          <div class="empty"></div>
+        </div>
+      </div>
+      <!-- 底部答案输入位置 -->
+      <div class="footer">
+        <input type="text" aria-placeholder="请输入您的答案" @change="toAnswer" v-model="answer" class="answer-input"
+               placeholder="请输入您的答案,回车即可提交!"></input>
+        <el-button @click="toAnswer" type="primary"> 确 认</el-button>
       </div>
     </div>
 
-    <!-- 底部答案输入位置 -->
-    <div class="footer">
-      <el-input type="text" aria-placeholder="请输入您的答案" @change="toAnswer" v-model="answer"></el-input>
-      <el-button @click="toAnswer">确认</el-button>
+    <div class="title-show">
+      剩余题目数: <span class="highlight">{{ result.remain }}</span>
+      正确次数:<span class="highlight">{{ result.rightCount }}</span>
+      错误次数:<span class="highlight">{{ result.wrongCount }} </span>
+      答题的模式为:<span class="highlight">{{ result.mode }}</span>
     </div>
-
     <!-- 音频播放audio -->
     <audio ref="audio" src="">
       您的浏览器不支持 audio 元素。
     </audio>
-
   </div>
 </template>
 
 <script>
 import respondentApi from "@/api/RespondentApi";
-import AnswerCard from "@/components/AnswerCard";
 
 // 后端识别的代表刷新的符号
 const refreshSymbol = "23456746756"
 
 export default {
   name: "answerIn",
-  components: {AnswerCard},
   data() {
     return {
       // 用户回答的一个答案
@@ -168,9 +172,22 @@ export default {
             }
           }
         } else if (this.result.status === 'end') {
+          respondentApi.end().then(resp => {
+            // 获取本次答题的一个记录对象
+            let record = resp.data[0];
+            if (resp.data.length === 10) {
+              record = resp.data[5]
+            }
 
+            this.$alert("答题结束,您的正确率为!" + record.accuracy * 100 + "%即将返回首页!", '答题结束', {
+              confirmButtonText: '确定',
+              callback: action => {
+                this.$router.push({path: "/"})
+              }
+            });
+
+          })
         }
-
       })
     },
     // 提取result对象中对于当前题目的内容,生成一个对应的history对象  isCurrent 是否转化的是当前的问题 值为false表示转换上一个问题
@@ -200,10 +217,11 @@ export default {
       }
       this.history.push(temp)
 
-      setTimeout(() => {
-        // 将滚动条滚动到最后面
-        this.$refs.scroll.scrollTop = this.$refs.scroll.scrollHeight
-      }, 200)
+//  已经在updated的生命周期中进行了处理
+      /*      setTimeout(() => {
+              // 将滚动条滚动到最后面
+              this.$refs.scroll.scrollTop = this.$refs.scroll.scrollHeight
+            }, 200)*/
 
       // 最后,将用户回答的内容文本框清空
       this.answer = ""
@@ -291,27 +309,67 @@ export default {
     this.history = []
     // 创建的时候,初始化一下相关的数据
     this.refreshData()
+  },
+  updated() {
+    // 将滚动条滚动到最后面
+    this.$refs.scroll.scrollTop = this.$refs.scroll.scrollHeight
   }
 }
 </script>
 
 <style scoped>
 
-.container {
-  height: 1000px;
+.context {
+  height: 100%;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.main {
+  width: 60%;
+  height: 100%;
 }
 
 .answer {
   width: 100%;
-  background-color: aquamarine;
-  height: 70%;
+  background-color: wheat;
+  height: 80%;
   overflow-y: scroll;
+  padding: 20px;
+}
+
+/* 用户答案的一个输入框 */
+.answer-input {
+  text-align: center;
+  /*flex-grow: 1;*/
+  width: 70%;
+  font-size: x-large;
 }
 
 .empty {
   width: 100%;
   height: 10px;
+}
+
+.footer {
+  display: flex;
+  margin: 10px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: space-around;
+}
+
+.title-show {
+  margin: 10px 0;
+  position: absolute;
+  bottom: 10px;
+}
+
+.highlight {
+  font-weight: bold;
+  font-size: large;
 }
 
 

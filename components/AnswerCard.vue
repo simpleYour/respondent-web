@@ -1,38 +1,42 @@
 <template>
   <!-- 回答问题的card -->
-  <div class="context">
-    <div class="punishment" v-if="punishment.current !== -1">
-      当前为惩罚模式:请您第{{ punishment.current }}输入正确答案,总共有{{ punishment.number }}次!
-    </div>
+  <!-- 最外面的这个div,会被父组件应用上css样式,并且子组件也可以应用上css样式 这点就很坑人 -->
+  <div>
+    <div class="context">
+      <div class="punishment" v-if="punishment.current !== -1">
+        当前为惩罚模式:请您第{{ punishment.current }}输入正确答案,总共有{{ punishment.number }}次!
+      </div>
 
-    <div class="question">
-      <div></div>
-      <div style="font-size: large">
-        问题为:{{ question }}
-      </div>
-      <el-image @click="playAudio"
-                style="width: 25px; "
-                class="play-icon"
-                src="/voice.png"
-      ></el-image>
-    </div>
+      <div class="question">
+        <div></div>
+        <div style="font-size: large"  @click="linkToWord">
+          问题为:{{ question }}
+        </div>
 
-    <!-- 只有当用户回答的有内容之后,才会去进行判断显示后面的内容 -->
-    <div v-if="userAnswer">
-      <!-- 一个分割线,进行分割一下 -->
-      <div class="line"></div>
-      <!-- 依据用户回答的一个内容来进行显示-->
-      <div v-if="isRight" class="right">
-        恭喜你!回答正确!
+        <el-image @click="playAudio"
+                  style="width: 25px; "
+                  class="play-icon"
+                  src="/voice.png"
+        ></el-image>
       </div>
-      <div v-else class="error">
-        不好意思,你回答错误了!正确答案为:{{ answer }},您回答的内容为:{{ userAnswer }}
-      </div>
+
+      <!-- 只有当用户回答的有内容之后,才会去进行判断显示后面的内容 -->
+      <template v-if="userAnswer">
+        <!-- 一个分割线,进行分割一下 -->
+        <div class="line"></div>
+        <!-- 依据用户回答的一个内容来进行显示-->
+        <div v-if="isRight" class="right">
+          恭喜你!回答正确!
+        </div>
+        <div v-else class="error">
+          不好意思,你回答错误了!正确答案为:<span class="highlight">{{ answer }}</span>,您回答的内容为:{{ userAnswer }}
+        </div>
+      </template>
+      <!-- 音频播放audio -->
+      <audio ref="audio" src="http://dict.youdao.com/dictvoice?audio=explore">
+        您的浏览器不支持 audio 元素。
+      </audio>
     </div>
-    <!-- 音频播放audio -->
-    <audio ref="audio" src="http://dict.youdao.com/dictvoice?audio=explore">
-      您的浏览器不支持 audio 元素。
-    </audio>
   </div>
 </template>
 
@@ -66,15 +70,21 @@ export default {
       this.$refs.audio.src = this.voicePath
       this.$refs.audio.play()
     },
+    // 跳转到单词网的解释页面
+    linkToWord() {
+      // todo 这里需要后期去修改成后端提供的链接
+      let url = 'http://www.youdao.com/w/eng/' + this.answer
+      window.open(url)
+    }
   },
   created() {
 
   },
   mounted() {
     // 创建初始化该组件的时候,如果设置为可以播放,则直接去进行播放
-/*    if (this.isPlay) {
-      this.playAudio()
-    }*/
+    /*    if (this.isPlay) {
+          this.playAudio()
+        }*/
   }
 }
 </script>
@@ -84,39 +94,59 @@ export default {
 .context {
   background-color: white;
   padding: 10px;
+  box-sizing: border-box;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  /*height: 50px;*/
   /*width: 100%;*/
-  border-radius: 20px;
-
+  border-radius: 10px;
 }
 
 .context > * {
-  width: 100%;
-  flex-grow: 1;
+  /*width: 100%;*/
+  /*flex-grow: 1;*/
+}
+
+.punishment {
+  color: #909399;
+  font-size: medium;
+  text-align: center;
 }
 
 .question {
   display: flex;
   align-items: center;
+  width: 80%;
   justify-content: space-between;
 }
 
 .line {
   height: 1px;
   width: 100%;
-  background-color: dimgrey;
+  background-color: #c8c9cc;
   margin: 10px 0;
 }
 
 .right {
   background-color: rgb(92, 184, 122);
+  text-align: center;
+  padding: 2px;
+  border-radius: 5px;
 }
 
 .error {
   background-color: rgb(230, 162, 60);
+  text-align: center;
+  padding: 2px;
+  border-radius: 5px;
+}
+
+.highlight {
+  font-weight: bold;
+  font-size: large;
+  color: red;
 }
 
 </style>

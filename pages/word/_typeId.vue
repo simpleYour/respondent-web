@@ -29,14 +29,14 @@
       <el-table-column
         prop="word"
         min-width="100"
-        label="单词">
+        label="单词" >
         <template slot-scope="scope">
           <a :href="'http://www.youdao.com/w/eng/'+scope.row.word" target="_blank">{{ scope.row.word }}</a>
         </template>
       </el-table-column>
       <el-table-column
         label="中文解释"
-        width="300">
+        min-width="300">
         <template slot-scope="scope">
           <div style="white-space: pre-wrap;">{{ scope.row.mean }}</div>
         </template>
@@ -117,7 +117,7 @@ export default {
   data() {
     return {
       current: 1,
-      size: 10,
+      size: 20,
       records: [{
         "count": 0,
         "deleted": 0,
@@ -143,7 +143,10 @@ export default {
       // 是否正在向后端请求数据中
       loading: false,
       // 判断是否已经加载到了最后一页了
-      isEnd: false
+      isEnd: false,
+      // 提示用户 "没有更多数据了",这段话的展示,加个锁
+      // 这个只是用来保存上一次加载的时间戳,然后以用时间戳之间的距离的方式来加锁
+      loadLock: 0
     }
   },
   methods: {
@@ -152,7 +155,13 @@ export default {
       if (this.isEnd && this.current > 1) {
         // 如果已经加载到了最后一页,则不继续向下加载了
         // 之所以要判断current>1 是为了防止条件搜索失效
-        this.$message("没有更多数据了!")
+
+        // 加个1s中的锁,防止疯狂弹出
+        if (new Date().getTime() - this.loadLock > 3000) {
+          this.$message("没有更多数据了!")
+          this.loadLock = new Date().getTime()
+        }
+
         return
       }
 
@@ -292,18 +301,19 @@ export default {
   background-color: aquamarine;
 }
 
-a{
+a {
   text-decoration: none;
+  font-size: large;
+  font-weight: normal;
 }
 
-a:visited,a:link{
+a:visited, a:link {
   color: -moz-default-color;
 }
 
-a:hover{
+a:hover {
   text-decoration: aquamarine;
 }
-
 
 
 </style>
