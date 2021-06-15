@@ -1,6 +1,10 @@
 <template>
   <!-- 回答问题的card -->
   <div class="context">
+    <div class="punishment" v-if="punishment.current !== -1">
+      当前为惩罚模式:请您第{{ punishment.current }}输入正确答案,总共有{{ punishment.number }}次!
+    </div>
+
     <div class="question">
       <div></div>
       <div style="font-size: large">
@@ -17,12 +21,12 @@
     <div v-if="userAnswer">
       <!-- 一个分割线,进行分割一下 -->
       <div class="line"></div>
-      <!-- 依据用户回答的一个内容来进行显示  todo 后面再来考虑是否为颠倒模式的情况 -->
-      <div v-if="userAnswer === answer" class="right">
+      <!-- 依据用户回答的一个内容来进行显示-->
+      <div v-if="isRight" class="right">
         恭喜你!回答正确!
       </div>
       <div v-else class="error">
-        不好意思,你回答错误了!正确答案为:{{ answer }}
+        不好意思,你回答错误了!正确答案为:{{ answer }},您回答的内容为:{{ userAnswer }}
       </div>
     </div>
     <!-- 音频播放audio -->
@@ -48,14 +52,18 @@ export default {
     // 用户回答的答案内容
     userAnswer: String,
     // 音频播放的地址
-    voiceUrl: String,
+    voicePath: String,
     // 是否自动播放音频
-    isPlay: Boolean
+    isPlay: Boolean,
+    // 后端给到的一个答案,判断是否回答正确
+    isRight: Boolean,
+    // 惩罚模式的封装参数
+    punishment: Object
   },
   methods: {
+    // 音频的播放
     playAudio() {
-      // let audio = this.$refs.audio
-      this.$refs.audio.src = this.voiceUrl
+      this.$refs.audio.src = this.voicePath
       this.$refs.audio.play()
     },
   },
@@ -64,9 +72,9 @@ export default {
   },
   mounted() {
     // 创建初始化该组件的时候,如果设置为可以播放,则直接去进行播放
-    if (this.isPlay) {
+/*    if (this.isPlay) {
       this.playAudio()
-    }
+    }*/
   }
 }
 </script>

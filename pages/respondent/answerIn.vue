@@ -2,14 +2,15 @@
   <!-- 答题过程中的页面 -->
 
   <div class="container">
-
     <!-- 已回答内容区域 -->
     <div class="answer" ref="scroll">
       <!--      <answer-card :id="result.current.id" :question="result.current.word" :answer="result.current.mean"
                          :is-play="true" :voice-url="result.current.voicePath"></answer-card>-->
       <div v-for="item in history">
+        <!-- todo 这里需要去展现一下惩罚的一个次数 -->
         <answer-card :id="item.id" :question="item.question" :answer="item.answer" :user-answer="item.userAnswer"
-                     :is-play="item.isPlay" :voice-url="item.voicePath"></answer-card>
+                     :is-play="item.isPlay" :voice-path="item.voicePath" :is-right="item.isRight"
+                     :punishment="item.punishment"></answer-card>
         <div class="empty"></div>
       </div>
     </div>
@@ -19,6 +20,11 @@
       <el-input type="text" aria-placeholder="请输入您的答案" @change="toAnswer" v-model="answer"></el-input>
       <el-button @click="toAnswer">确认</el-button>
     </div>
+
+    <!-- 音频播放audio -->
+    <audio ref="audio" src="">
+      您的浏览器不支持 audio 元素。
+    </audio>
 
   </div>
 </template>
@@ -39,6 +45,14 @@ export default {
       answer: "",
       // 全局设置是否自动音频播放
       isPlay: true,
+      // 惩罚相关的数据
+      punishment: {
+        // 惩罚的一个次数
+        number: 5,
+        // 当前是第几次,并且还可以表示是否开启一个惩罚模式
+        // -1 表示不开启,0表示初始化第一个题目 <=number 表示惩罚的一个过程中的次数
+        current: -1
+      },
       // 答题过程中的信息传输类
       result: {
         "current": {
@@ -76,9 +90,14 @@ export default {
         userAnswer: "",
         // 是否回答正确,这个是由后端返回的数据进行判断的,而非前端自行判断的值
         isRight: false,
-        voiceUrl: "",
+        voicePath: "",
         // 默认情况下,音频是自动播放的
-        isPlay: true
+        isPlay: true,
+        // 惩罚的一个数据封装
+        punishment: {
+          number: 5,
+          current: -1
+        }
       }]
     }
   },
@@ -99,6 +118,14 @@ export default {
     },
     // 与后端进行交互,进行一个答题 回答的答案为 this.answer
     toAnswer() {
+
+      // 判断处理是否为惩罚模式
+      if (this.punishment.current !== -1 && this.punishment.current <= this.punishment.number) {
+        // 进入惩罚的一个模式
+        this.doPunishment()
+        return
+      }
+
       respondentApi.isRight(this.answer).then(res => {
         this.result = res.data
 
@@ -123,9 +150,10 @@ export default {
           this.current.userAnswer = this.answer
           this.current.isRight = false
 
-          // todo 进行一个次数的惩罚
-          // 创建出来下一个问题
-          this.transform()
+          // 这里设置为0,表示开始一个惩罚的计数
+          this.punishment.current = 0
+          // 进行一个次数的惩罚
+          this.doPunishment();
 
         } else if (this.result.status === 'flush') {
           // 判断history中的上一个题目是否已经为当前问题了
@@ -143,14 +171,19 @@ export default {
 
         }
 
-        // 最后,将用户回答的内容文本框清空
-        this.answer = ""
-
       })
     },
-    // 提取result对象中对于当前题目的内容,生成一个对应的history对象
-    transform() {
+    // 提取result对象中对于当前题目的内容,生成一个对应的history对象  isCurrent 是否转化的是当前的问题 值为false表示转换上一个问题
+    transform(isCurrent = true) {
       let currentWord = this.result.current
+
+      if (!isCurrent) {
+        // 这个只有在错误惩罚的时候才会去调用处理,所以这个previous应该是不会为null的
+        currentWord = this.result.previous
+      }
+
+      console.log("即将添加一个card,其voicePath为:" + currentWord.voicePath)
+
       // todo 后面这里需要对是否为颠倒模式进行相应的判断处理
       let temp = {
         id: currentWord.id,
@@ -159,9 +192,11 @@ export default {
         userAnswer: "",
         // 是否回答正确,这个是由后端返回的数据进行判断的,而非前端自行判断的值
         isRight: undefined,
-        voiceUrl: currentWord.voicePath,
+        voicePath: currentWord.voicePath,
         // 默认情况下,音频是自动播放的
-        isPlay: this.isPlay
+        isPlay: this.isPlay,
+        // 因为这是对象的原因,所以需要进行一个深拷贝,防止对象引用
+        punishment: {...this.punishment}
       }
       this.history.push(temp)
 
@@ -170,7 +205,87 @@ export default {
         this.$refs.scroll.scrollTop = this.$refs.scroll.scrollHeight
       }, 200)
 
-    }
+      // 最后,将用户回答的内容文本框清空
+      this.answer = ""
+
+      // 播放上一个添加的card的音频
+      let previous = this.history[this.history.length - 2]
+      // 判断是否为null
+      if (previous) {
+        this.playAudio(previous.voicePath)
+      }
+
+    },
+    doPunishment() {
+      // 这里面需要涉及到三个时期,第一个为初始化进入时期,第二个为惩罚的时期,第三个为退出的flush时期
+
+      // 第一次进入  只是添加一个问题  不进行用户回答是否正确的判断
+      if (this.punishment.current === 0) {
+        // 设置当前次数为第一次,开始一个正式的惩罚
+        this.punishment.current = 1
+        this.transform(false)
+        return
+      }
+
+      if (this.punishment.current < this.punishment.number) {
+        // 后面的1-4次进入,判断用户是否回答正确,给到一个反馈
+
+        this.current.userAnswer = this.answer
+        // 判断用户回答是否正确,并且给出下一个问题  todo 后面处理颠倒模式
+        if (this.answer === this.current.answer) {
+          this.current.isRight = true
+
+          // 给那个惩罚的次数进行 +1
+          ++this.punishment.current
+
+          this.$message({
+            message: "回答正确!", duration: 1000, type: "success"
+          })
+
+        } else {
+          // 如果说回答错误,则不去进行一个过多的操作
+          this.current.isRight = false
+
+          this.$message({
+            message: "回答错误!", duration: 1000, type: "error"
+          })
+
+        }
+
+        // 给出下一次的一个提问
+        this.transform(false)
+
+      } else {
+        // 第5次进入,除了上面需要做的事情之外,还需要退出惩罚的一个模式
+        // 判断用户回答的对与错,是否去结束惩罚模式
+        this.current.userAnswer = this.answer
+        // 判断用户回答是否正确,并且给出下一个问题  todo 后面处理颠倒模式
+        if (this.answer === this.current.answer) {
+          this.current.isRight = true
+          // 当前次数,设置为-1,表示结束这一个惩罚模式
+          this.punishment.current = -1
+          // 给出退出惩罚模式后的下一个问题
+          this.transform()
+        } else {
+          // 如果说回答错误,则不去进行一个过多的操作
+          this.current.isRight = false
+          this.$message({
+            message: "回答错误!", duration: 1000, type: "error"
+          })
+
+          // 给出下一次的一个提问
+          this.transform(false)
+        }
+      }
+    },
+    // 音频的播放
+    playAudio(voicePath) {
+      // 只有全局设置为允许播放的时候,才可以去进行播放
+      if (this.isPlay) {
+        this.$refs.audio.src = voicePath
+        this.$refs.audio.play()
+      }
+    },
   },
   created() {
     this.history = []
