@@ -1,111 +1,116 @@
 <template>
-  <div class="container">
-    <!-- 查询条件的一个 form -->
-    <el-form :inline="true" :model="query" style="margin-top: 5px">
-      <el-form-item label="单词">
-        <el-input type="text" v-model="query.word" @change="search" clearable></el-input>
-      </el-form-item>
-      <el-form-item label="中文含义">
-        <el-input type="text" v-model="query.mean" @change="search" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="success" @click="search">确认</el-button>
-      </el-form-item>
-    </el-form>
-
-    <!-- 信息展示的一个table -->
-    <el-table
-      :data="records"
-      style="width: 100%;"
-      :fit="true"
-      max-height="800"
-      ref="table"
-      stripe>
-      <el-table-column label="序号" align="center">
-        <template slot-scope="scope">
-          {{ scope.$index + 1 }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="word"
-        min-width="100"
-        label="单词" >
-        <template slot-scope="scope">
-          <a :href="'http://www.youdao.com/w/eng/'+scope.row.word" target="_blank">{{ scope.row.word }}</a>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="中文解释"
-        min-width="300">
-        <template slot-scope="scope">
-          <div style="white-space: pre-wrap;">{{ scope.row.mean }}</div>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="count"
-        label="答题次数">
-      </el-table-column>
-      <el-table-column
-        prop="ecount"
-        label="错误次数">
-      </el-table-column>
-      <el-table-column
-        label="发音播放">
-        <template slot-scope="scope">
-          <el-image @click="playAudio(scope.row.voicePath)" @mouseenter="playAudio(scope.row.voicePath)"
-                    style="width: 25px; "
-                    class="play-icon"
-                    src="/voice.png"
-          ></el-image>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="gmtCreate"
-        width="190"
-        sortable
-        label="创建时间">
-      </el-table-column>
-      <el-table-column
-        prop="gmtModified"
-        width="190"
-        sortable
-        label="最近修改时间">
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        width="180">
-        <template slot-scope="scope">
-          <el-button type="warning" @click="modifyWord(scope.row)">修改</el-button>
-          <el-button type="danger" @click="deleteWord(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <!-- 修改单词dialog -->
-    <el-dialog
-      title="修改单词"
-      :visible.sync="modifyDialog"
-      width="30%">
-      <el-form :model="currentModifyWord">
+  <div>
+    <div class="container">
+      <!-- 查询条件的一个 form -->
+      <el-form :inline="true" :model="query" style="margin-top: 8px">
         <el-form-item label="单词">
-          <el-input type="text" v-model="currentModifyWord.word"></el-input>
+          <el-input type="text" v-model="query.word" @change="search" clearable></el-input>
         </el-form-item>
         <el-form-item label="中文含义">
-          <el-input type="textarea" v-model="currentModifyWord.mean" style="white-space: pre-wrap;"></el-input>
+          <el-input type="text" v-model="query.mean" @change="search" clearable></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" @click="search">确认</el-button>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+
+      <div style="margin: -15px 0 3px 0;font-size: small;color: #909399">查询结果:{{ page.total }}条</div>
+
+      <!-- 信息展示的一个table -->
+      <el-table
+        :data="records"
+        style="width: 100%;"
+        :fit="true"
+        max-height="800"
+        ref="table"
+        stripe>
+        <el-table-column label="序号" align="center">
+          <template slot-scope="scope">
+            {{ scope.$index + 1 }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="word"
+          min-width="100"
+          label="单词" >
+          <template slot-scope="scope">
+            <a :href="'http://www.youdao.com/w/eng/'+scope.row.word" target="_blank">
+              <highlight :content="scope.row.word" :high-content="query.word"></highlight>
+            </a>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="中文解释"
+          min-width="300">
+          <template slot-scope="scope">
+            <highlight :content="scope.row.mean" :high-content="query.mean" style="white-space: pre-wrap;"></highlight>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="count"
+          label="答题次数">
+        </el-table-column>
+        <el-table-column
+          prop="ecount"
+          label="错误次数">
+        </el-table-column>
+        <el-table-column
+          label="发音播放">
+          <template slot-scope="scope">
+            <el-image @click="playAudio(scope.row.voicePath)" @mouseenter="playAudio(scope.row.voicePath)"
+                      style="width: 25px; "
+                      class="play-icon"
+                      src="/voice.png"
+            ></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="gmtCreate"
+          width="190"
+          sortable
+          label="创建时间">
+        </el-table-column>
+        <el-table-column
+          prop="gmtModified"
+          width="190"
+          sortable
+          label="最近修改时间">
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          width="180">
+          <template slot-scope="scope">
+            <el-button type="warning" @click="modifyWord(scope.row)">修改</el-button>
+            <el-button type="danger" @click="deleteWord(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <!-- 修改单词dialog -->
+      <el-dialog
+        title="修改单词"
+        :visible.sync="modifyDialog"
+        width="30%">
+        <el-form :model="currentModifyWord">
+          <el-form-item label="单词">
+            <el-input type="text" v-model="currentModifyWord.word"></el-input>
+          </el-form-item>
+          <el-form-item label="中文含义">
+            <el-input type="textarea" v-model="currentModifyWord.mean" style="white-space: pre-wrap;"></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
         <el-button @click="modifyDialog = false">取 消</el-button>
         <el-button type="primary" @click="doModifyWord(currentModifyWord)">确定修改</el-button>
       </span>
-    </el-dialog>
+      </el-dialog>
 
-    <!-- 音频播放audio -->
-    <audio ref="audio" src="http://dict.youdao.com/dictvoice?audio=explore">
-      <!--              <source :src="scope.row.voicePath" type="audio/mpeg">-->
-      您的浏览器不支持 audio 元素。
-    </audio>
-
+      <!-- 音频播放audio -->
+      <audio ref="audio" src="http://dict.youdao.com/dictvoice?audio=explore">
+        <!--              <source :src="scope.row.voicePath" type="audio/mpeg">-->
+        您的浏览器不支持 audio 元素。
+      </audio>
+    </div>
   </div>
 </template>
 
@@ -146,7 +151,9 @@ export default {
       isEnd: false,
       // 提示用户 "没有更多数据了",这段话的展示,加个锁
       // 这个只是用来保存上一次加载的时间戳,然后以用时间戳之间的距离的方式来加锁
-      loadLock: 0
+      loadLock: 0,
+      // 最近查询的一个分页对象
+      page: {}
     }
   },
   methods: {
@@ -167,13 +174,13 @@ export default {
 
       this.loading = true
       WordApi.list(this.query, this.current, this.size).then(res => {
-        //  这里应给是pushAll
-        res.data.records.forEach(item => {
-          this.records.push(item)
-        })
+        //将查询结果push进去
+        this.records.push(...res.data.records)
 
         // 以此判断是否已经到了最后一页
         this.isEnd = res.data.current >= res.data.pages
+
+        this.page = res.data
 
         this.loading = false
       })
@@ -191,11 +198,6 @@ export default {
       this.records = []
       // 将当前页面重置回到第一页
       this.current = 1
-      this.getData()
-    },
-    // 依据现有条件,加载下一页的数据
-    nextPage() {
-      ++this.current
       this.getData()
     },
     // 修改单词
@@ -288,7 +290,7 @@ export default {
   display: flex;
   flex-direction: column;
   /*flex-wrap: wrap;*/
-  justify-content: center;
+  /*justify-content: center;*/
   align-items: center;
 }
 

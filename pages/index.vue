@@ -12,12 +12,8 @@
 </template>
 
 <script>
-import TypeCard from "~/components/TypeCard";
 
 export default {
-  components: {
-    TypeCard
-  },
   data() {
     return {
       typeId: "1398083368758841345"
