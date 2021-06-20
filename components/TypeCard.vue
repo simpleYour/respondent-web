@@ -9,7 +9,7 @@
     </div>
     <div>
       <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-      <div id="main" style="width: 300px;height:200px;" ref="main"></div>
+      <div id="main" style="width: 400px;height:200px;" ref="main"></div>
     </div>
     <div class="footer">
       <div>单词数:{{ wordType.wordCount }}</div>
@@ -98,9 +98,10 @@ export default {
 
 .container {
   background-color: #ffffff;
+  border-radius: 5px;
 }
 
-.title{
+.title {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -108,10 +109,11 @@ export default {
   font-size: x-large;
 }
 
-a{
+a {
   text-decoration: none;
 }
-a:visited{
+
+a:visited {
   color: black;
 }
 

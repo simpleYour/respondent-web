@@ -102,7 +102,9 @@ export default {
           number: 5,
           current: -1
         }
-      }]
+      }],
+      // 答题正确与否,是否显示正确或错误的toast信息
+      isShowMessage: false
     }
   },
   computed: {
@@ -135,9 +137,11 @@ export default {
 
         // 这里对不同的status进行不一样的处理
         if (this.result.status === 'right') {
-          this.$message({
-            message: "回答正确!", duration: 1000, type: "success"
-          })
+          if (this.isShowMessage) {
+            this.$message({
+              message: "回答正确!", duration: 1000, type: "success"
+            })
+          }
 
           // 给上一个问题一个答复
           this.current.userAnswer = this.answer
@@ -146,9 +150,11 @@ export default {
           // 创建出来下一个问题
           this.transform()
         } else if (this.result.status === 'error') {
-          this.$message({
-            message: "回答错误!", duration: 1000, type: "error"
-          })
+          if (this.isShowMessage) {
+            this.$message({
+              message: "回答错误!", duration: 1000, type: "error"
+            })
+          }
 
           // 给上一个问题一个答复
           this.current.userAnswer = this.answer
@@ -256,20 +262,23 @@ export default {
           // 给那个惩罚的次数进行 +1
           ++this.punishment.current
 
-          this.$message({
-            message: "回答正确!", duration: 1000, type: "success"
-          })
+          if (this.isShowMessage) {
+            this.$message({
+              message: "回答正确!", duration: 1000, type: "success"
+            })
+          }
+
 
         } else {
           // 如果说回答错误,则不去进行一个过多的操作
           this.current.isRight = false
 
-          this.$message({
-            message: "回答错误!", duration: 1000, type: "error"
-          })
-
+          if (this.isShowMessage) {
+            this.$message({
+              message: "回答错误!", duration: 1000, type: "error"
+            })
+          }
         }
-
         // 给出下一次的一个提问
         this.transform(false)
 
@@ -287,9 +296,12 @@ export default {
         } else {
           // 如果说回答错误,则不去进行一个过多的操作
           this.current.isRight = false
-          this.$message({
-            message: "回答错误!", duration: 1000, type: "error"
-          })
+
+          if (this.isShowMessage) {
+            this.$message({
+              message: "回答错误!", duration: 1000, type: "error"
+            })
+          }
 
           // 给出下一次的一个提问
           this.transform(false)

@@ -3,6 +3,22 @@
     <div class="container">
       <!-- 查询条件的一个 form -->
       <el-form :inline="true" :model="query" style="margin-top: 8px">
+        <el-form-item>
+          <el-date-picker
+            v-model="query.startDate"
+            format="yyyy-MM-dd"
+            type="date"
+            placeholder="开始日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-date-picker
+            v-model="query.endDate"
+            format="yyyy-MM-dd"
+            type="date"
+            placeholder="结束日期">
+          </el-date-picker>
+        </el-form-item>
         <el-form-item label="单词">
           <el-input type="text" v-model="query.word" @change="search" clearable></el-input>
         </el-form-item>
@@ -23,6 +39,7 @@
         :fit="true"
         max-height="800"
         ref="table"
+        @sort-change="serviceSort"
         stripe>
         <el-table-column label="序号" align="center">
           <template slot-scope="scope">
@@ -32,9 +49,9 @@
         <el-table-column
           prop="word"
           min-width="100"
-          label="单词" >
+          label="单词">
           <template slot-scope="scope">
-            <a :href="'http://www.youdao.com/w/eng/'+scope.row.word" target="_blank">
+            <a :href="scope.row.link" target="_blank">
               <highlight :content="scope.row.word" :high-content="query.word"></highlight>
             </a>
           </template>
@@ -48,10 +65,12 @@
         </el-table-column>
         <el-table-column
           prop="count"
+          sortable="custom"
           label="答题次数">
         </el-table-column>
         <el-table-column
           prop="ecount"
+          sortable="custom"
           label="错误次数">
         </el-table-column>
         <el-table-column
@@ -67,14 +86,12 @@
         <el-table-column
           prop="gmtCreate"
           width="190"
-          sortable
+          sortable="custom"
           label="创建时间">
         </el-table-column>
         <el-table-column
-          prop="gmtModified"
-          width="190"
-          sortable
-          label="最近修改时间">
+          prop="notes"
+          label="备注信息">
         </el-table-column>
         <el-table-column
           label="操作"
@@ -136,10 +153,18 @@ export default {
         "word": "",
         "wordTypeId": ""
       }],
+      // 单词列表的条件查询封装类
       query: {
-        wordTypeId: "",
-        word: "",
-        mean: ""
+        "countSort": undefined,
+        // 默认以这个日期的降序排序
+        "dateSort": false,
+        "endDate": "",
+        "errorCountSort": undefined,
+        "mean": "",
+        "notes": "",
+        "startDate": "",
+        "word": "",
+        "wordTypeId": ""
       },
       // 修改单词的对话框 是否显示
       modifyDialog: false,
@@ -171,7 +196,6 @@ export default {
 
         return
       }
-
       this.loading = true
       WordApi.list(this.query, this.current, this.size).then(res => {
         //将查询结果push进去
@@ -184,6 +208,38 @@ export default {
 
         this.loading = false
       })
+    },
+    // 当点击了table中的排序字段后,调用该方法,进行一个后端服务器的排序调用
+    // 被问我为什么要取obj这么个名字,要问就问element-ui的官方人员
+    serviceSort(obj) {
+      console.log("接收到的要排序的属性名称为:" + obj.prop)
+      // console.log("接收到的排序顺序为:" + obj.order)
+
+      // 对这三个参数进行后端请求排序
+
+      // 将el-table中的排序字符转化为后端所识别的排序字符
+      let sortSymbol = obj.order ? obj.order === 'ascending' : undefined
+
+      console.log("排列顺序为:" + sortSymbol)
+
+      // 为了增加用户的一个体验,排序时只允许同时一个参数进行排序 这里就先进行所有排序参数的清空
+      this.query.countSort = undefined
+      this.query.errorCountSort = undefined
+      this.query.dateSort = undefined
+
+      // 对这三个参数进行数据处理
+      switch (obj.prop) {
+        case 'count':
+          this.query.countSort = sortSymbol
+          break
+        case 'gmtCreate':
+          this.query.dateSort = sortSymbol
+          break
+        case 'ecount':
+          this.query.errorCountSort = sortSymbol
+          break
+      }
+      this.search()
     },
     playAudio(voicePath) {
       let audio = this.$refs.audio

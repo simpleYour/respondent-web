@@ -144,6 +144,10 @@ export default {
       // 答题日期范围的选择
       dateData: [
         {
+          value: 1,
+          label: "最近1天",
+        },
+        {
           value: 10,
           label: "最近10天",
         },

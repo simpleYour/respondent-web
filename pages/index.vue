@@ -3,21 +3,41 @@
     <div class="container">
 
       <div class="types">
-        <type-card :word-type-id="typeId"></type-card>
-
+        <type-card v-for="item in types" :word-type-id="item.id"></type-card>
       </div>
-
     </div>
   </div>
 </template>
 
 <script>
+import wordTypeApi from "@/api/WordTypeApi";
 
 export default {
   data() {
     return {
-      typeId: "1398083368758841345"
+      // 已经登录用户的单词本列表
+      types: [{
+        "errorCount": 0,
+        "gmtCreate": "",
+        "gmtModified": "",
+        "id": "",
+        "recordCount": 0,
+        "typeName": "",
+        "userId": "",
+        "wordCount": 0
+      }]
     }
+  },
+  methods: {
+    // 初始化单词本数据
+    initTypeData() {
+      wordTypeApi.listAll().then(res => {
+        this.types = res.data
+      })
+    }
+  },
+  created() {
+    this.initTypeData()
   }
 }
 </script>
