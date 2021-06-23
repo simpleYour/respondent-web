@@ -28,7 +28,14 @@
         <el-form-item>
           <el-button type="success" @click="search">确认</el-button>
         </el-form-item>
+
+        <el-form-item>
+          <add-word :type-id="typeId">
+            <el-button type="primary">添加单词</el-button>
+          </add-word>
+        </el-form-item>
       </el-form>
+
 
       <div style="margin: -15px 0 3px 0;font-size: small;color: #909399">查询结果:{{ page.total }}条</div>
 
@@ -58,7 +65,7 @@
         </el-table-column>
         <el-table-column
           label="中文解释"
-          min-width="300">
+          min-width="200">
           <template slot-scope="scope">
             <highlight :content="scope.row.mean" :high-content="query.mean" style="white-space: pre-wrap;"></highlight>
           </template>
@@ -66,14 +73,17 @@
         <el-table-column
           prop="count"
           sortable="custom"
+          width="100"
           label="答题次数">
         </el-table-column>
         <el-table-column
           prop="ecount"
+          width="100"
           sortable="custom"
           label="错误次数">
         </el-table-column>
         <el-table-column
+          width="100"
           label="发音播放">
           <template slot-scope="scope">
             <el-image @click="playAudio(scope.row.voicePath)" @mouseenter="playAudio(scope.row.voicePath)"
@@ -90,8 +100,13 @@
           label="创建时间">
         </el-table-column>
         <el-table-column
-          prop="notes"
+
+          min-width="150"
           label="备注信息">
+          <template slot-scope="scope">
+            <div style="white-space: pre-wrap;">{{ scope.row.notes }}</div>
+          </template>
+
         </el-table-column>
         <el-table-column
           label="操作"

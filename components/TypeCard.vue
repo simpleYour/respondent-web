@@ -1,20 +1,22 @@
 <template>
   <!-- 单词本展示的card -->
 
-  <div class="container">
-    <div class="title">
-      <nuxt-link :to="'/word/'+wordTypeId">
-        {{ wordType.typeName }}
-      </nuxt-link>
-    </div>
-    <div>
-      <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-      <div id="main" style="width: 400px;height:200px;" ref="main"></div>
-    </div>
-    <div class="footer">
-      <div>单词数:{{ wordType.wordCount }}</div>
-      <div>答题记录数:{{ wordType.recordCount }}</div>
-      <div>错题数:{{ wordType.errorCount }}</div>
+  <div>
+    <div class="container">
+      <div class="title">
+        <nuxt-link :to="'/word/'+wordTypeId">
+          {{ wordType.typeName }}
+        </nuxt-link>
+      </div>
+      <div>
+        <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+        <div id="main" style="width: 400px;height:200px;" ref="main"></div>
+      </div>
+      <div class="footer">
+        <div>单词数:{{ wordType.wordCount }}</div>
+        <div>答题记录数:{{ wordType.recordCount }}</div>
+        <div>错题数:{{ wordType.errorCount }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -99,6 +101,8 @@ export default {
 .container {
   background-color: #ffffff;
   border-radius: 5px;
+  display: flex;
+  flex-direction: column;
 }
 
 .title {
