@@ -139,13 +139,16 @@ export default {
           value: 50,
           label: "50题",
         },
-
       ],
       // 答题日期范围的选择
       dateData: [
         {
           value: 1,
           label: "最近1天",
+        },
+        {
+          value: 3,
+          label: "最近3天",
         },
         {
           value: 10,

@@ -39,84 +39,86 @@
 
       <div style="margin: -15px 0 3px 0;font-size: small;color: #909399">查询结果:{{ page.total }}条</div>
 
-      <!-- 信息展示的一个table -->
-      <el-table
-        :data="records"
-        style="width: 100%;"
-        :fit="true"
-        max-height="800"
-        ref="table"
-        @sort-change="serviceSort"
-        stripe>
-        <el-table-column label="序号" align="center">
-          <template slot-scope="scope">
-            {{ scope.$index + 1 }}
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="word"
-          min-width="100"
-          label="单词">
-          <template slot-scope="scope">
-            <a :href="scope.row.link" target="_blank">
-              <highlight :content="scope.row.word" :high-content="query.word"></highlight>
-            </a>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="中文解释"
-          min-width="200">
-          <template slot-scope="scope">
-            <highlight :content="scope.row.mean" :high-content="query.mean" style="white-space: pre-wrap;"></highlight>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="count"
-          sortable="custom"
-          width="100"
-          label="答题次数">
-        </el-table-column>
-        <el-table-column
-          prop="ecount"
-          width="100"
-          sortable="custom"
-          label="错误次数">
-        </el-table-column>
-        <el-table-column
-          width="100"
-          label="发音播放">
-          <template slot-scope="scope">
-            <el-image @click="playAudio(scope.row.voicePath)" @mouseenter="playAudio(scope.row.voicePath)"
-                      style="width: 25px; "
-                      class="play-icon"
-                      src="/voice.png"
-            ></el-image>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="gmtCreate"
-          width="190"
-          sortable="custom"
-          label="创建时间">
-        </el-table-column>
-        <el-table-column
+      <div class="main" id="main" ref="main">
+        <!-- 信息展示的一个table -->
+        <el-table
+          :data="records"
+          style="width: 100%;"
+          :fit="true"
+          :max-height.sync="tableHeight"
+          ref="table"
+          @sort-change="serviceSort"
+          stripe>
+          <el-table-column label="序号" align="center">
+            <template slot-scope="scope">
+              {{ scope.$index + 1 }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="word"
+            min-width="100"
+            label="单词">
+            <template slot-scope="scope">
+              <a :href="scope.row.link" target="_blank">
+                <highlight :content="scope.row.word" :high-content="query.word"></highlight>
+              </a>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="中文解释"
+            min-width="200">
+            <template slot-scope="scope">
+              <highlight :content="scope.row.mean" :high-content="query.mean"
+                         style="white-space: pre-wrap;"></highlight>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="count"
+            sortable="custom"
+            width="100"
+            label="答题次数">
+          </el-table-column>
+          <el-table-column
+            prop="ecount"
+            width="100"
+            sortable="custom"
+            label="错误次数">
+          </el-table-column>
+          <el-table-column
+            width="100"
+            label="发音播放">
+            <template slot-scope="scope">
+              <el-image @click="playAudio(scope.row.voicePath)" @mouseenter="playAudio(scope.row.voicePath)"
+                        style="width: 25px; "
+                        class="play-icon"
+                        src="/voice.png"
+              ></el-image>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="gmtCreate"
+            width="190"
+            sortable="custom"
+            label="创建时间">
+          </el-table-column>
+          <el-table-column
+            min-width="150"
+            label="备注信息">
+            <template slot-scope="scope">
+              <div style="white-space: pre-wrap;">{{ scope.row.notes }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="操作"
+            width="180">
+            <template slot-scope="scope">
+              <el-button type="warning" @click="modifyWord(scope.row)">修改</el-button>
+              <el-button type="danger" @click="deleteWord(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
-          min-width="150"
-          label="备注信息">
-          <template slot-scope="scope">
-            <div style="white-space: pre-wrap;">{{ scope.row.notes }}</div>
-          </template>
-
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          width="180">
-          <template slot-scope="scope">
-            <el-button type="warning" @click="modifyWord(scope.row)">修改</el-button>
-            <el-button type="danger" @click="deleteWord(scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
 
       <!-- 修改单词dialog -->
       <el-dialog
@@ -128,10 +130,12 @@
             <el-input type="text" v-model="currentModifyWord.word"></el-input>
           </el-form-item>
           <el-form-item label="中文含义">
-            <el-input type="textarea" autosize v-model="currentModifyWord.mean" style="white-space: pre-wrap;"></el-input>
+            <el-input type="textarea" autosize v-model="currentModifyWord.mean"
+                      style="white-space: pre-wrap;"></el-input>
           </el-form-item>
           <el-form-item label="备注信息">
-            <el-input type="textarea" autosize v-model="currentModifyWord.notes" style="white-space: pre-wrap;"></el-input>
+            <el-input type="textarea" autosize v-model="currentModifyWord.notes"
+                      style="white-space: pre-wrap;"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -196,7 +200,9 @@ export default {
       // 这个只是用来保存上一次加载的时间戳,然后以用时间戳之间的距离的方式来加锁
       loadLock: 0,
       // 最近查询的一个分页对象
-      page: {}
+      page: {},
+      // 依据table的父组件的绝对布局,确定table需要展示的一个高度
+      tableHeight: 800
     }
   },
   methods: {
@@ -342,6 +348,7 @@ export default {
     this.getData()
   },
   mounted() {
+    this.tableHeight = this.$refs.main.clientHeight
     // 给table添加滚动事件
     this.$refs.table.bodyWrapper.addEventListener("scroll", this.scroll)
   },
@@ -384,11 +391,19 @@ a {
 }
 
 a:visited, a:link {
-  color: -moz-default-color;
+  /*color: -moz-default-color;*/
+  color: black;
 }
 
 a:hover {
   text-decoration: aquamarine;
+}
+
+.main {
+  width: 100%;
+  position: absolute;
+  top: 80px;
+  bottom: 10px;
 }
 
 

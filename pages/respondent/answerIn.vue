@@ -10,7 +10,7 @@
         <div v-for="item in history">
           <answer-card :id="item.id" :question="item.question" :answer="item.answer" :user-answer="item.userAnswer"
                        :is-play="item.isPlay" :voice-path="item.voicePath" :is-right="item.isRight"
-                       :punishment="item.punishment"></answer-card>
+                       :punishment="item.punishment" :notes="item.notes"></answer-card>
           <div class="empty"></div>
         </div>
       </div>
@@ -67,7 +67,8 @@ export default {
           "mean": "",
           "voicePath": "",
           "word": "",
-          "wordTypeId": ""
+          "wordTypeId": "",
+          "notes":""
         },
         "mode": "",
         "previous": {
@@ -78,7 +79,8 @@ export default {
           "mean": "",
           "voicePath": "",
           "word": "",
-          "wordTypeId": ""
+          "wordTypeId": "",
+          "notes":""
         },
         "recordId": "",
         "remain": 0,
@@ -101,7 +103,8 @@ export default {
         punishment: {
           number: 5,
           current: -1
-        }
+        },
+        notes: ""
       }],
       // 答题正确与否,是否显示正确或错误的toast信息
       isShowMessage: false
@@ -218,6 +221,7 @@ export default {
         voicePath: currentWord.voicePath,
         // 默认情况下,音频是自动播放的
         isPlay: this.isPlay,
+        notes: currentWord.notes,
         // 因为这是对象的原因,所以需要进行一个深拷贝,防止对象引用
         punishment: {...this.punishment}
       }

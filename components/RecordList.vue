@@ -4,11 +4,11 @@
   <div>
     <div class="container">
 
-      <div class="ranking">答题记录排行榜(近7天)</div>
+      <div class="ranking">答题记录(近7天)</div>
 
       <div class="list">
         <div class="row" v-for="item in records">
-          <!--          <div class="typeName">{{ item.typeName }}</div>-->
+          <div class="typeName">{{ item.typeName }}</div>
 
           <div class="progress">
             <el-progress :text-inside="true" :stroke-width="26"
@@ -39,11 +39,11 @@ export default {
       size: 100,
       // 答题记录的查询对象
       query: {
-        "dateSort": undefined,
+        "dateSort": false,
         "endDate": "",
         // 默认查询已结束的答题记录信息
         "isOver": 1,
-        "rankSort": false,
+        "rankSort": undefined,
         "startDate": "",
         "wordTypeIds": []
       },
@@ -159,6 +159,11 @@ export default {
   display: flex;
   margin: 4px 3px;
   align-items: center;
+}
+
+.typeName {
+  padding: 3px;
+  /*font-weight: bold;*/
 }
 
 .progress {

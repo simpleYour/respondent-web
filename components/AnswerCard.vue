@@ -9,7 +9,7 @@
 
       <div class="question">
         <div></div>
-        <div style="font-size: large"  @click="linkToWord">
+        <div style="font-size: large" @click="linkToWord">
           问题为:{{ question }}
         </div>
 
@@ -18,6 +18,14 @@
                   class="play-icon"
                   src="/voice.png"
         ></el-image>
+
+        <div class="notes-switch" v-if="notes">备注
+          <el-switch
+            v-model="showNotes"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </div>
       </div>
 
       <!-- 只有当用户回答的有内容之后,才会去进行判断显示后面的内容 -->
@@ -32,6 +40,12 @@
           不好意思,你回答错误了!正确答案为:<span class="highlight">{{ answer }}</span>,您回答的内容为:{{ userAnswer }}
         </div>
       </template>
+
+      <div v-show="showNotes" style="width: 100%">
+        <div class="line"></div>
+        <div class="notes" style="text-align: center">备注信息为:{{ notes }}</div>
+      </div>
+
       <!-- 音频播放audio -->
       <audio ref="audio" src="http://dict.youdao.com/dictvoice?audio=explore">
         您的浏览器不支持 audio 元素。
@@ -43,6 +57,11 @@
 <script>
 export default {
   name: "AnswerCard",
+  data() {
+    return {
+      showNotes: false
+    }
+  },
   props: {
     // id唯一值
     id: {
@@ -62,7 +81,8 @@ export default {
     // 后端给到的一个答案,判断是否回答正确
     isRight: Boolean,
     // 惩罚模式的封装参数
-    punishment: Object
+    punishment: Object,
+    notes: String
   },
   methods: {
     // 音频的播放
@@ -85,6 +105,24 @@ export default {
     /*    if (this.isPlay) {
           this.playAudio()
         }*/
+  },
+  watch: {
+    isRight(val, oldVal) {
+      // todo 其实这里的方法是没有生效的,这个watch应该是有点问题,只执行了一次,可以参看下面一行代码
+      // console.log("oldVal:" + oldVal)
+
+      // 因为第一次赋值时false,所以为了避免,第一次赋值时的影响,这里对oldVal进行一个判断处理
+      if ((typeof oldVal) === 'undefined') {
+        console.log("............")
+        return
+      }
+
+      // 监听是否正确的参数,如果错误,则自动展示备注信息
+      // 加上一个条件,必须是这个单词有备注信息的情况下 没有的话,没必要展示
+      if (!val && this.notes) {
+        this.showNotes = true
+      }
+    }
   }
 }
 </script>
@@ -102,6 +140,7 @@ export default {
   /*height: 50px;*/
   /*width: 100%;*/
   border-radius: 10px;
+  position: relative;
 }
 
 .context > * {
@@ -147,6 +186,11 @@ export default {
   font-weight: bold;
   font-size: large;
   color: red;
+}
+
+.notes-switch {
+  position: absolute;
+  right: 5px;
 }
 
 </style>
