@@ -1,6 +1,6 @@
 import axios from 'axios'
 import auth from "@/utils/auth";
-import { Message, MessageBox } from 'element-ui'
+import {Message, MessageBox} from 'element-ui'
 
 // 创建axios实例
 const service = axios.create({
@@ -41,22 +41,40 @@ service.interceptors.response.use(
 
       // this.$message.error(res.msg)
 
-      // 50008:非法的token; 50012:其他客户端登录了;  50014:Token 过期了;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        MessageBox.confirm(
-          '你已被登出，可以取消继续留在该页面，或者重新登录',
-          '确定登出',
-          {
-            confirmButtonText: '重新登录',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }
-        ).then(() => {
-          store.dispatch('FedLogOut').then(() => {
-            location.reload() // 为了重新实例化vue-router对象 避免bug
-          })
+      if (res.code === 460) {
+        MessageBox.confirm('您还未登录,请先登录后再尝试!', '未登录', {
+          confirmButtonText: '跳转登录页面'
+        }).then(() => {
+          window.location.href = '/user/login'
         })
       }
+
+      if (res.code === 465) {
+        MessageBox.confirm('您的登录已超时,请重新登录', '登录超时', {
+          confirmButtonText: '跳转登录页面'
+        }).then(() => {
+          window.location.href = '/user/login'
+        })
+      }
+
+
+      // 50008:非法的token; 50012:其他客户端登录了;  50014:Token 过期了;
+      /*      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+              MessageBox.confirm(
+                '你已被登出，可以取消继续留在该页面，或者重新登录',
+                '确定登出',
+                {
+                  confirmButtonText: '重新登录',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }
+              ).then(() => {
+                store.dispatch('FedLogOut').then(() => {
+                  location.reload() // 为了重新实例化vue-router对象 避免bug
+                })
+              })
+            }*/
+
       return Promise.reject('error')
     } else {
       // 自动获取相应对象中的data数据主体  不用再使用.data.data的方式进行获取其中的数据了

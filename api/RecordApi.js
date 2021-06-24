@@ -24,5 +24,13 @@ export default {
       method: "post",
       data: query
     })
+  },
+  // 查询符合条件的答题记录vo类
+  searchVo(query, current, size) {
+    return request({
+      url: `${BASE_URL}/vo/${current}/${size}`,
+      method: "post",
+      data: query
+    })
   }
 }

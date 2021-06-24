@@ -75,6 +75,20 @@ export default {
       wordApi.add(this.word).then(res => {
         this.$message.success("添加成功!")
         this.showDialog = false
+
+        // 将数据给置空
+        this.word = {
+          "count": 0,
+          "ecount": 0,
+          "link": "",
+          "mean": "",
+          "notes": "",
+          "voicePath": "",
+          "word": "",
+          // 将typeId赋值上来
+          "wordTypeId": this.typeId
+        }
+
       }).catch(error => {
         this.$message.error("添加失败!")
       })
@@ -109,7 +123,6 @@ input {
   padding: 3px;
   flex-shrink: 0;
 }
-
 
 
 </style>

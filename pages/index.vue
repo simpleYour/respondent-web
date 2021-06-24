@@ -1,14 +1,18 @@
 <template>
   <div>
+
     <div class="container">
 
       <div class="types">
         <type-card v-for="item in types" :word-type-id="item.id"></type-card>
+        <el-image src="/add.png" style="width: 80px; height: 80px;margin-left: 160px;margin-top: 20px"
+                  @click="addType"
+        ></el-image>
+
       </div>
 
       <div class="records">
-
-
+        <record-list :type-ids="typeIds"></record-list>
       </div>
     </div>
   </div>
@@ -30,16 +34,17 @@ export default {
         "typeName": "",
         "userId": "",
         "wordCount": 0
-      }],
-      // 答题记录的查询对象
-      recordQuery: {
-        "dateSort": true,
-        "endDate": "",
-        "isOver": 0,
-        "rankSort": true,
-        "startDate": "",
-        "wordTypeIds": []
-      }
+      }]
+    }
+  },
+  computed: {
+    // 计算获取用户所有单词本id集合
+    typeIds() {
+      let ids = []
+      this.types.forEach(item => {
+        ids.push(item.id)
+      })
+      return ids
     }
   },
   methods: {
@@ -48,6 +53,23 @@ export default {
       wordTypeApi.listAll().then(res => {
         this.types = res.data
       })
+    },
+    // 添加一个单词本
+    addType() {
+      this.$prompt('请输入您要添加的单词本名称', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({value}) => {
+        // 添加单词本
+        let addTypeContent = {
+          "typeName": value,
+        }
+        wordTypeApi.addType(addTypeContent).then(res => {
+          this.$message.success("添加成功!请刷新页面后查看!")
+        })
+      }).catch(() => {
+        this.$message.info("已取消")
+      });
     }
   },
   created() {
@@ -56,7 +78,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
 .container {
   display: flex;
@@ -68,6 +90,17 @@ export default {
 .types {
   display: flex;
   flex-direction: column;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.types > * {
+  margin-bottom: 10px;
+}
+
+.records {
+  /*display: flex;*/
+  /*flex-direction: column;*/
 }
 
 </style>

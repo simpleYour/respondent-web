@@ -128,7 +128,10 @@
             <el-input type="text" v-model="currentModifyWord.word"></el-input>
           </el-form-item>
           <el-form-item label="中文含义">
-            <el-input type="textarea" v-model="currentModifyWord.mean" style="white-space: pre-wrap;"></el-input>
+            <el-input type="textarea" autosize v-model="currentModifyWord.mean" style="white-space: pre-wrap;"></el-input>
+          </el-form-item>
+          <el-form-item label="备注信息">
+            <el-input type="textarea" autosize v-model="currentModifyWord.notes" style="white-space: pre-wrap;"></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">

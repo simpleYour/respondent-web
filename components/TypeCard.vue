@@ -3,14 +3,24 @@
 
   <div>
     <div class="container">
+
       <div class="title">
         <nuxt-link :to="'/word/'+wordTypeId">
           {{ wordType.typeName }}
         </nuxt-link>
+        <div class="options">
+          <div class="option" @click="modifyTypeName">修改</div>
+          <div class="option"><i class="el-icon-delete" @click="deleteType"></i></div>
+        </div>
       </div>
       <div>
         <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-        <div id="main" style="width: 400px;height:200px;" ref="main"></div>
+        <div id="main" style="width: 400px;height:200px;" ref="main" v-show="dateCount.length"></div>
+        <div v-show="!dateCount.length" class="empty">
+          <el-image src="/empty.png" style="width: 150px;margin: 0 auto"></el-image>
+          <div>暂时还没有答题数据,快去答题吧!</div>
+        </div>
+
       </div>
       <div class="footer">
         <div>单词数:{{ wordType.wordCount }}</div>
@@ -55,7 +65,12 @@ export default {
   },
   mounted() {
     // 初始化eCharts实例对象
-    myCharts = echarts.init(document.getElementById("main"));
+    let element = document.getElementById("main")
+    if (element) {
+      myCharts = echarts.init(element);
+    } else {
+      console.log("这个单词本:" + this.wordTypeId + "还没有答题记录信息")
+    }
   },
   created() {
     wordTypeApi.getVoById(this.wordTypeId).then(res => {
@@ -68,7 +83,11 @@ export default {
       "typeId": this.wordTypeId
     }).then(res => {
       this.dateCount = res.data
-      this.refreshEcharts(this.dateCount)
+
+      // 只有当其有数据的时候,才会去加载相应的图表信息
+      if (res.data.length) {
+        this.refreshEcharts(this.dateCount)
+      }
     })
 
   },
@@ -91,6 +110,34 @@ export default {
         ]
       }
       myCharts.setOption(option)
+    },
+    // 删除当前单词本
+    deleteType() {
+      this.$confirm('此操作将永久删除<<' + this.wordType.typeName + '>>该单词本相关的所' +
+        '有内容(包括但不限于答题本中的所有单词,相关的所有答题记录),是否继续?', "提示", {
+        confirmButtonText: "确定删除",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        wordTypeApi.removeById(this.wordTypeId).then(res => {
+          this.$message.success("删除成功,请刷新页面后查看!")
+        })
+      }).catch(() => {
+        this.$message.info("已取消!")
+      })
+    },
+    // 修改单词本的名称
+    modifyTypeName() {
+      this.$prompt('请输入您要修改的单词本名称', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({value}) => {
+        wordTypeApi.modifyTypeName(this.wordType.id, value).then(res => {
+          this.$message.success("修改成功!请刷新页面后查看!")
+        })
+      }).catch(() => {
+        this.$message.info("已取消")
+      });
     }
   }
 }
@@ -103,15 +150,41 @@ export default {
   border-radius: 5px;
   display: flex;
   flex-direction: column;
+  padding: 5px;
 }
 
 .title {
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
   font-size: x-large;
+  position: relative;
 }
+
+
+.options {
+  position: absolute;
+  font-size: medium;
+  right: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.option {
+  padding: 2px;
+  margin: 2px;
+  border-radius: 2px;
+}
+
+.empty {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #909399;
+}
+
 
 a {
   text-decoration: none;
