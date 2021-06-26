@@ -8,7 +8,6 @@
         <el-image src="/add.png" style="width: 80px; height: 80px;margin-left: 160px;margin-top: 20px"
                   @click="addType"
         ></el-image>
-
       </div>
 
       <div class="records">
@@ -92,6 +91,10 @@ export default {
   flex-direction: column;
   margin-left: 10px;
   margin-top: 10px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  overflow-y: auto;
 }
 
 .types > * {

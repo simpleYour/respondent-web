@@ -15,7 +15,7 @@
       </div>
       <div>
         <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-        <div id="main" style="width: 400px;height:200px;" ref="main" v-show="dateCount.length"></div>
+        <div :id="'main'+wordTypeId" style="width: 400px;height:200px;" ref="main" v-show="dateCount.length"></div>
         <div v-show="!dateCount.length" class="empty">
           <el-image src="/empty.png" style="width: 150px;margin: 0 auto"></el-image>
           <div>暂时还没有答题数据,快去答题吧!</div>
@@ -35,8 +35,6 @@
 import wordTypeApi from "~/api/WordTypeApi";
 import recordApi from "@/api/RecordApi";
 import * as echarts from 'echarts';
-
-let myCharts = undefined;
 
 export default {
   name: "TypeCard",
@@ -60,38 +58,58 @@ export default {
           "dateDay": "",
           "typeId": ""
         }
-      ]
+      ],
+      myCharts: {}
     }
   },
   mounted() {
     // 初始化eCharts实例对象
-    let element = document.getElementById("main")
+    let element = document.getElementById("main" + this.wordTypeId)
+
     if (element) {
-      myCharts = echarts.init(element);
+      // myCharts = echarts.init(element);
+      this.myCharts = echarts.init(element);
     } else {
       console.log("这个单词本:" + this.wordTypeId + "还没有答题记录信息")
     }
   },
   created() {
-    wordTypeApi.getVoById(this.wordTypeId).then(res => {
-      this.wordType = res.data
-    })
 
-    this.dateCount = []
-    recordApi.dateCount({
-      "number": 5,
-      "typeId": this.wordTypeId
-    }).then(res => {
-      this.dateCount = res.data
-
-      // 只有当其有数据的时候,才会去加载相应的图表信息
-      if (res.data.length) {
-        this.refreshEcharts(this.dateCount)
-      }
-    })
+    if (this.wordTypeId) {
+      this.initData()
+    } else {
+      setTimeout(() => {
+        this.initData()
+      }, 200)
+    }
 
   },
   methods: {
+    // 调用一次组件的初始化信息
+    initData() {
+      wordTypeApi.getVoById(this.wordTypeId).then(res => {
+        this.wordType = res.data
+      })
+
+      this.dateCount = []
+      recordApi.dateCount({
+        "number": 5,
+        "typeId": this.wordTypeId
+      }).then(res => {
+        // 只有当其有数据的时候,才会去加载相应的图表信息
+        if (res.data) {
+          // this.dateCount = res.data
+
+          // 对那个日期数据进行一下处理,去除年份信息
+          res.data.forEach(item => {
+            item.dateDay = item.dateDay.substr(6)
+          })
+          this.dateCount = res.data
+
+          this.refreshEcharts(this.dateCount)
+        }
+      })
+    },
     // 构建eCharts实例的图表结构数据
     refreshEcharts(data) {
       //绘制图表 定义相关的选项设置
@@ -109,7 +127,8 @@ export default {
           {type: 'bar', seriesLayoutBy: 'row', name: "最近答题数"}
         ]
       }
-      myCharts.setOption(option)
+      // myCharts.setOption(option)
+      this.myCharts.setOption(option)
     },
     // 删除当前单词本
     deleteType() {
@@ -128,7 +147,7 @@ export default {
     },
     // 修改单词本的名称
     modifyTypeName() {
-      this.$prompt('请输入您要修改的单词本名称', '提示', {
+      this.$prompt('请输入您要修改的单词本名称,原单词本名称为:<<' + this.wordType.typeName + ">>", '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({value}) => {

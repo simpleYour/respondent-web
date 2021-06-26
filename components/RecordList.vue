@@ -151,7 +151,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 95%;
-  overflow-y: scroll;
+  overflow-y: auto;
   /*flex: 1 0 auto;*/
 }
 
