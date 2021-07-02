@@ -1,19 +1,29 @@
 <template>
-  <div class="container">
-    <div class="header">
-      <div>登录</div>
+  <div style="height: 100%">
+    <div class="container">
+      <div class="card">
+        <div class="header">
+          <el-image src="/avatar.png" style="height: 50px" :fit="'contain'"></el-image>
+          <div>登录</div>
+        </div>
+        <el-form ref="form" :model="user" label-width="80px" label-position="left" :rules="rules">
+          <el-form-item label="用户名" prop="name">
+            <el-input v-model="user.name" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="user.password" clearable></el-input>
+          </el-form-item>
+        </el-form>
+        <div class="footer">
+          <div class="register">
+            <nuxt-link to="/user/register" tag="div">
+              注 册
+            </nuxt-link>
+          </div>
+          <el-button type="success" @click="login" style="flex-grow: 1">登录</el-button>
+        </div>
+      </div>
     </div>
-    <el-form ref="form" :model="user" label-width="80px" label-position="left" :rules="rules">
-      <el-form-item label="用户名" prop="name">
-        <el-input v-model="user.name" clearable></el-input>
-      </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input type="password" v-model="user.password" clearable></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="success" @click="login">登录</el-button>
-      </el-form-item>
-    </el-form>
   </div>
 </template>
 
@@ -22,7 +32,7 @@ import UserApi from "~/api/UserApi";
 
 export default {
   name: "login",
-  layout: "empty",
+  layout: "user",
   data() {
     return {
       user: {
@@ -54,13 +64,11 @@ export default {
 <style scoped>
 
 .container {
-  width: 50%;
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
   background-color: #ffffff;
   display: flex;
   justify-content: center;
-  flex-direction: row;
-  flex-wrap: wrap;
 }
 
 
@@ -70,14 +78,40 @@ export default {
 
 .header {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  /*justify-content: center;*/
   align-content: center;
-  margin-bottom: 5px;
+  margin-bottom: 25px;
 }
 
 .header * {
   /*font-family: "华文行楷",Georgia,Serif; ;*/
   font-size: x-large;
+  margin: 5px auto;
+}
+
+/* 做出一个卡片框的样式 */
+.card {
+  width: 500px;
+  height: 350px;
+  background-color: wheat;
+  border-radius: 8px;
+  margin-top: 5%;
+  padding: 15px;
+}
+
+.footer {
+  display: flex;
+}
+
+.footer > * {
+  margin: 0 10px;
+}
+
+.register {
+  align-self: flex-end;
+  margin-right: 30px;
+  text-decoration: underline;
 }
 
 </style>

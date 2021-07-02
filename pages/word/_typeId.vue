@@ -2,7 +2,7 @@
   <div>
     <div class="container">
       <!-- 查询条件的一个 form -->
-      <el-form :inline="true" :model="query" style="margin-top: 8px">
+      <el-form :inline="true" :model="query" style="margin-top: 8px;margin-left: 5px">
         <el-form-item>
           <el-date-picker
             v-model="query.startDate"
@@ -26,14 +26,25 @@
           <el-input type="text" v-model="query.mean" @change="search" clearable></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="success" @click="search">确认</el-button>
+          <el-button type="success" @click="search">确认搜索</el-button>
         </el-form-item>
 
         <el-form-item>
           <add-word :type-id="typeId">
             <el-button type="primary">添加单词</el-button>
+
+            <div slot="batch">
+              <el-button>上传<i class="el-icon-upload el-icon--right"></i></el-button>
+            </div>
+
+            <div slot="template">
+              <el-button>模板下载<i class="el-icon-download el-icon--right"></i></el-button>
+            </div>
+
           </add-word>
         </el-form-item>
+
+
       </el-form>
 
 

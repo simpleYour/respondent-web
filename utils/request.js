@@ -2,12 +2,18 @@ import axios from 'axios'
 import auth from "@/utils/auth";
 import {Message, MessageBox} from 'element-ui'
 
+let baseURL = 'http://localhost:8081/respondent2' // api本地端的base_url
+// baseURL = 'http://online.respondent.top:9001/respondent2' // api服务器端的base_url
+
+
 // 创建axios实例
 const service = axios.create({
-  // baseURL: 'http://localhost:8081/respondent2', // api本地端的base_url
-  baseURL: 'http://online.respondent.top:9001/respondent2', // api服务器端的base_url
+  baseURL: baseURL,
   timeout: 10000 // 请求超时时间
 })
+
+// 这里进行一个赋值,方便后面的地方进行调用
+service.baseURL = baseURL
 
 // request拦截器
 service.interceptors.request.use(

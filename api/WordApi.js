@@ -36,6 +36,14 @@ export default {
       url: `${BASE_URL}/${id}`,
       method: "delete"
     })
+  },
+  // 下载批量添加单词的模板
+  downloadTemplate() {
+    // 直接打开这个下载连接
+    window.open(`${request.baseURL}${BASE_URL}/template`)
+  },
+  uploadURL(typeId) {
+    return `${request.baseURL}${BASE_URL}/upload/${typeId}`
   }
 
 

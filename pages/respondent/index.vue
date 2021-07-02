@@ -44,8 +44,9 @@
             </el-option>
           </el-select>
         </div>
-        <div>
+        <div class="center">
           <el-button type="primary" @click="startRespondent">确 定</el-button>
+          <el-button type="info" @click="downloadExcel" size="small">下载Excel文件</el-button>
         </div>
         <el-divider content-position="center">
           <h3>Tips</h3>
@@ -208,6 +209,11 @@ export default {
         // 选择第一个单词本
         this.respondentOption.typeId = res.data[0].id
       })
+    },
+    downloadExcel() {
+      let {mode, num, dateScope, typeId} = this.respondentOption
+      // 发送请求,成功后跳转页面
+      respondentApi.downloadExcel(typeId, mode, num, dateScope)
     }
   },
   created() {
@@ -251,4 +257,13 @@ export default {
   justify-content: space-between;
   flex-wrap: wrap;
 }
+
+
+.center {
+  display: flex;
+  justify-content: center;
+
+
+}
+
 </style>
