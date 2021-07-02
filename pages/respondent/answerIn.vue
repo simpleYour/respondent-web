@@ -10,7 +10,7 @@
         <div v-for="item in history">
           <answer-card :id="item.id" :question="item.question" :answer="item.answer" :user-answer="item.userAnswer"
                        :is-play="item.isPlay" :voice-path="item.voicePath" :is-right="item.isRight"
-                       :punishment="item.punishment" :notes="item.notes"></answer-card>
+                       :punishment="item.punishment" :notes="item.notes" :link="item.link"></answer-card>
           <div class="empty"></div>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default {
           "voicePath": "",
           "word": "",
           "wordTypeId": "",
-          "notes":""
+          "notes": ""
         },
         "mode": "",
         "previous": {
@@ -80,7 +80,7 @@ export default {
           "voicePath": "",
           "word": "",
           "wordTypeId": "",
-          "notes":""
+          "notes": ""
         },
         "recordId": "",
         "remain": 0,
@@ -104,7 +104,9 @@ export default {
           number: 5,
           current: -1
         },
-        notes: ""
+        notes: "",
+        // 单词的一个解释链接
+        link: ""
       }],
       // 答题正确与否,是否显示正确或错误的toast信息
       isShowMessage: false
@@ -181,20 +183,15 @@ export default {
             }
           }
         } else if (this.result.status === 'end') {
-          respondentApi.end().then(resp => {
+          respondentApi.endOne().then(resp => {
             // 获取本次答题的一个记录对象
-            let record = resp.data[0];
-            if (resp.data.length === 10) {
-              record = resp.data[5]
-            }
-
+            let record = resp.data;
             this.$alert("答题结束,您的正确率为!" + record.accuracy * 100 + "%即将返回首页!", '答题结束', {
               confirmButtonText: '确定',
               callback: action => {
                 this.$router.push({path: "/"})
               }
             });
-
           })
         }
       })
@@ -208,9 +205,8 @@ export default {
         currentWord = this.result.previous
       }
 
-      console.log("即将添加一个card,其voicePath为:" + currentWord.voicePath)
+      // console.log("即将添加一个card,其voicePath为:" + currentWord.voicePath)
 
-      // todo 后面这里需要对是否为颠倒模式进行相应的判断处理
       let temp = {
         id: currentWord.id,
         question: currentWord.mean,
@@ -223,8 +219,17 @@ export default {
         isPlay: this.isPlay,
         notes: currentWord.notes,
         // 因为这是对象的原因,所以需要进行一个深拷贝,防止对象引用
-        punishment: {...this.punishment}
+        punishment: {...this.punishment},
+        link: currentWord.link
       }
+
+      //这里对是否为颠倒模式进行相应的判断处理
+      if (this.isInvertMode()) {
+        temp.question = currentWord.word
+        temp.answer = currentWord.mean
+      }
+
+
       this.history.push(temp)
 
 //  已经在updated的生命周期中进行了处理
@@ -259,8 +264,9 @@ export default {
         // 后面的1-4次进入,判断用户是否回答正确,给到一个反馈
 
         this.current.userAnswer = this.answer
-        // 判断用户回答是否正确,并且给出下一个问题  todo 后面处理颠倒模式
-        if (this.answer === this.current.answer) {
+        // 判断用户回答是否正确,并且给出下一个问题   对颠倒模式进行不同的处理
+        // if (this.answer === this.current.answer) {
+        if (this.isInvertMode() ? this.current.answer.indexOf(this.answer) !== -1 : this.answer === this.current.answer) {
           this.current.isRight = true
 
           // 给那个惩罚的次数进行 +1
@@ -290,8 +296,9 @@ export default {
         // 第5次进入,除了上面需要做的事情之外,还需要退出惩罚的一个模式
         // 判断用户回答的对与错,是否去结束惩罚模式
         this.current.userAnswer = this.answer
-        // 判断用户回答是否正确,并且给出下一个问题  todo 后面处理颠倒模式
-        if (this.answer === this.current.answer) {
+        // 判断用户回答是否正确,并且给出下一个问题  对颠倒模式进行不同的处理
+        // if (this.answer === this.current.answer) {
+        if (this.isInvertMode() ? this.current.answer.indexOf(this.answer) !== -1 : this.answer === this.current.answer) {
           this.current.isRight = true
           // 当前次数,设置为-1,表示结束这一个惩罚模式
           this.punishment.current = -1
@@ -320,6 +327,10 @@ export default {
         this.$refs.audio.play()
       }
     },
+    // 当前答题是否为颠倒模式
+    isInvertMode() {
+      return this.result.mode === respondentApi.invertMode
+    }
   },
   created() {
     this.history = []

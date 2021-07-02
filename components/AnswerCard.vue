@@ -82,7 +82,9 @@ export default {
     isRight: Boolean,
     // 惩罚模式的封装参数
     punishment: Object,
-    notes: String
+    notes: String,
+    // 单词的一个解释链接
+    link: String
   },
   methods: {
     // 音频的播放
@@ -92,9 +94,9 @@ export default {
     },
     // 跳转到单词网的解释页面
     linkToWord() {
-      // todo 这里需要后期去修改成后端提供的链接
-      let url = 'http://www.youdao.com/w/eng/' + this.answer
-      window.open(url)
+      // 这里需要后期去修改成后端提供的链接
+      // let url = 'http://www.youdao.com/w/eng/' + this.answer
+      window.open(this.link)
     }
   },
   created() {
@@ -109,7 +111,7 @@ export default {
   watch: {
     isRight(val, oldVal) {
       // todo 其实这里的方法是没有生效的,这个watch应该是有点问题,只执行了一次,可以参看下面一行代码
-      // console.log("oldVal:" + oldVal)
+      console.log("oldVal:" + oldVal)
 
       // 因为第一次赋值时false,所以为了避免,第一次赋值时的影响,这里对oldVal进行一个判断处理
       if ((typeof oldVal) === 'undefined') {

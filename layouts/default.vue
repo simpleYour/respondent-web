@@ -14,11 +14,35 @@
         词缀查询
       </nuxt-link>
 
-      <div class="end">欢迎您:{{ user.name }}
-        <el-avatar
-          src="https://guli-student.oss-cn-hangzhou.aliyuncs.com/2021/03/23/a92482c0-7ff8-43a0-b29e-e730e044156a1616506526908.jpeg"
-          size="small"></el-avatar>
+      <!--            <div class="end" @click="userAbout = !userAbout">
+                    欢迎您:{{ user.name }}
+                    <ul v-show="userAbout" class="user-option" style="color: black">
+                      <li>
+                        切换用户
+                      </li>
+                      <li>
+                        退出登录
+                      </li>
+                    </ul>
+                    &lt;!&ndash;        <el-avatar
+                              src="https://guli-student.oss-cn-hangzhou.aliyuncs.com/2021/03/23/a92482c0-7ff8-43a0-b29e-e730e044156a1616506526908.jpeg"
+                              size="small"></el-avatar>&ndash;&gt;
+                  </div>-->
+
+      <div class="welcome">欢迎您!
+        <div style="display: inline;">{{ user.name }}
+          <ul id="userOption">
+            <!--            <li>修改密码</li>-->
+            <li>
+              <nuxt-link to="/user/login" tag="div">
+                切换用户
+              </nuxt-link>
+            </li>
+            <li @click="logout">注销</li>
+          </ul>
+        </div>
       </div>
+
     </div>
     <div class="main">
       <Nuxt/>
@@ -31,7 +55,9 @@ import auth from "~/utils/auth";
 export default {
   data() {
     return {
-      user: {}
+      user: {},
+      // 用户相关的操作,是否进行展示
+      userAbout: false
     }
   },
   methods: {
@@ -50,6 +76,12 @@ export default {
         element.style.width = "80%"
       }
       element.style.left = leftOffset + "px"
+    },
+    // 退出登录
+    logout() {
+      auth.removeUserInfo()
+      auth.removeToken()
+      window.location.href = '/user/login'
     }
   },
   created() {
@@ -119,12 +151,65 @@ html, body {
 
 .main {
   position: absolute;
-  background-color: rgb(242,246,252);
+  background-color: rgb(242, 246, 252);
   width: 100%;
   /* .height的高度 */
   top: 40px;
   /*height: 800px;*/
   bottom: 0;
 }
+
+.user-option {
+  position: absolute;
+  top: 40px;
+  width: 80px;
+  color: black;
+  z-index: 999;
+  list-style: none;
+}
+
+
+/* 用户信息右侧浮动 */
+.welcome {
+  float: right;
+  width: 20%;
+  box-sizing: border-box;
+  text-align: right;
+  position: absolute;
+  right: 5px;
+  z-index: 9999;
+}
+
+#userOption {
+  right: -10px;
+  position: absolute;
+  list-style: none;
+  background-color: #526488;
+  width: 100px;
+  height: auto;
+  padding-inline-start: 0;
+  visibility: hidden;
+  margin-top: 0;
+  padding: 3px;
+}
+
+#userOption > li {
+  padding: 3px;
+  text-align: center;
+}
+
+#userOption > li:hover {
+  background-color: #909399;
+
+}
+
+.welcome > div:hover #userOption {
+  visibility: visible;
+}
+
+#userOption:hover #userOption {
+  visibility: visible;
+}
+
 
 </style>
