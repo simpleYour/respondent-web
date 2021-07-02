@@ -13,6 +13,10 @@
         <i class="el-icon-search"></i>
         词缀查询
       </nuxt-link>
+      <nuxt-link to="/record" tag="div">
+        <i class="el-icon-info"></i>
+        答题记录
+      </nuxt-link>
 
       <!--            <div class="end" @click="userAbout = !userAbout">
                     欢迎您:{{ user.name }}

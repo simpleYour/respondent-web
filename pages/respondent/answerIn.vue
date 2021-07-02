@@ -26,7 +26,11 @@
       剩余题目数: <span class="highlight">{{ result.remain }}</span>
       正确次数:<span class="highlight">{{ result.rightCount }}</span>
       错误次数:<span class="highlight">{{ result.wrongCount }} </span>
-      答题的模式为:<span class="highlight">{{ result.mode }}</span>
+      <el-switch
+        v-model="isPlay" style="margin-bottom: 5px"
+        active-text="是否自动播放音频">
+      </el-switch>
+<!--      答题的模式为:<span class="highlight">{{ result.mode }}</span>-->
     </div>
     <!-- 音频播放audio -->
     <audio ref="audio" src="">

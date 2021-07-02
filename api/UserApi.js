@@ -1,11 +1,15 @@
 import request from "~/utils/request";
 import auth from "~/utils/auth";
 import {Message, MessageBox} from 'element-ui'
+import md5 from 'js-md5'
 
 const BASE_URL = "/user";
 
 export default {
   login(user) {
+    // 对用户的密码进行加密
+    user.password = md5(user.password)
+
     return request({
       url: `${BASE_URL}`,
       method: "post",
@@ -47,12 +51,19 @@ export default {
     })
   },
   updatePassword(old, current) {
+    // 进行密码加密
+    old = md5(old)
+    current = md5(current)
+
     return request({
       url: `${BASE_URL}/password/${old}/${current}`,
       method: "post"
     })
   },
   register(user) {
+    // 对用户的密码进行加密
+    user.password = md5(user.password)
+
     return request({
       url: `${BASE_URL}/register`,
       method: "post",

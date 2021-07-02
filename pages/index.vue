@@ -20,6 +20,7 @@
 <script>
 import wordTypeApi from "@/api/WordTypeApi";
 
+
 export default {
   data() {
     return {
