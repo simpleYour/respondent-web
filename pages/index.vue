@@ -51,7 +51,10 @@ export default {
     // 初始化单词本数据
     initTypeData() {
       wordTypeApi.listAll().then(res => {
-        this.types = res.data
+        // 返回的数据不为空的情况下才会去设置
+        if (res.data) {
+          this.types = res.data
+        }
       })
     },
     // 添加一个单词本
@@ -73,6 +76,7 @@ export default {
     }
   },
   created() {
+    this.types = []
     this.initTypeData()
   }
 }

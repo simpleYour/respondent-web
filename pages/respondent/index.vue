@@ -185,6 +185,11 @@ export default {
     startRespondent() {
       // 进行请求参数的效验
 
+      if (!this.respondentOption.typeId) {
+        this.$message.error("您还没有单词本,快去创建一个单词本吧!")
+        return
+      }
+
       let {mode, num, dateScope, typeId} = this.respondentOption
       // 发送请求,成功后跳转页面
       respondentApi.init(typeId, mode, num, dateScope).then(res => {
@@ -211,6 +216,11 @@ export default {
       })
     },
     downloadExcel() {
+      if (!this.respondentOption.typeId) {
+        this.$message.error("您还没有单词本,快去创建一个单词本吧!")
+        return
+      }
+
       let {mode, num, dateScope, typeId} = this.respondentOption
       // 发送请求,成功后跳转页面
       respondentApi.downloadExcel(typeId, mode, num, dateScope)

@@ -6,7 +6,7 @@
         <!--        {{ word }}-->
         <highlight :content="word" :high-content="highContent"></highlight>
 
-        <div class="type">{{ type }}</div>
+        <div class="type">{{ typeName }}</div>
       </div>
       <div class="main">
         {{ mean }}
@@ -32,6 +32,21 @@ export default {
     toLink() {
       window.open(this.link)
     }
+  },
+  computed: {
+    typeName() {
+      // 词根词缀所属的一个类型.1:为前缀 2为后缀 3为词根 4为英文词根 -1为所有类型
+      switch (this.type) {
+        case 1:
+          return '前缀'
+        case 2:
+          return '后缀'
+        case 3:
+          return '词根'
+        default:
+          return '英文词根'
+      }
+    }
   }
 }
 </script>
@@ -56,8 +71,12 @@ export default {
 }
 
 .type {
-  background-color: chartreuse;
-  border-radius: 5px;
+  /*background-color: chartreuse;*/
+  /*border-radius: 5px;*/
+  font-weight: normal;
+  color: #82848a;
+  font-size: medium;
+
 }
 
 .main {

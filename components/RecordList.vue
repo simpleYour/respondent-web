@@ -6,7 +6,7 @@
 
       <div class="ranking">答题记录(近7天)</div>
 
-      <div class="list">
+      <div class="list" v-if="records.length">
         <div class="row" v-for="item in records">
           <div class="typeName">{{ item.typeName }}</div>
 
@@ -16,6 +16,10 @@
           </div>
           <div class="date">{{ item.gmtCreate | date("mm-dd hh:MM") }}</div>
         </div>
+      </div>
+
+      <div v-else class="empty">
+        <el-image src="/noData.png"></el-image>
       </div>
 
     </div>
@@ -36,7 +40,7 @@ export default {
     return {
       // 分页的相关数据
       current: 1,
-      size: 100,
+      size: 1000,
       // 答题记录的查询对象
       query: {
         "dateSort": false,
@@ -116,6 +120,7 @@ export default {
     }
   },
   created() {
+    this.records = []
     // 可能由于父组件是使用计算属性传递值得原因,这里接收到得参数有可能是为空的,但是过了一点时间就好了,
     // 所以这里使用一个循环计时器的方式,判断是否有数据,然后再去向后端请求数据
     let id = setInterval(() => {
@@ -173,6 +178,11 @@ export default {
 .date {
   margin: 0 5px;
   color: #909399;
+}
+
+.empty {
+  margin: 0 auto;
+  text-align: center;
 }
 
 

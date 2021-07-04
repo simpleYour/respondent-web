@@ -28,7 +28,7 @@
 
         <div class="item"><span>&nbsp;&nbsp;单&nbsp;&nbsp;&nbsp;词&nbsp;&nbsp;</span>
 <!--          <input type="text" v-model="word.word" placeholder="回车获取网络解释" @keyup.enter="getWebMean"></input>-->
-          <el-input type="text" v-model="word.word" placeholder="回车获取网络解释" @keyup.enter="getWebMean"></el-input>
+          <el-input type="text" v-model="word.word" placeholder="回车获取网络解释" @change="getWebMean"></el-input>
         </div>
         <div class="item"><span>中文解释</span>
           <el-input type="textarea" v-model="word.mean" style="white-space: pre-wrap;"></el-input>

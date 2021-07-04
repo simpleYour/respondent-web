@@ -43,10 +43,10 @@
           <el-button type="success" @click="search">确认搜索</el-button>
         </el-form-item>
       </el-form>
-      <div style="margin: -15px 0 3px 0;font-size: small;color: #909399">查询结果:{{ page.total }}条
+      <div style="margin: -15px 0 3px 0;font-size: small;color: #909399">查询结果:{{ page.total ? page.total : 0 }}条
       </div>
 
-      <div class="list" ref="dataList">
+      <div class="list" ref="dataList" v-if="records.length">
         <div class="row" v-for="item in records">
           <div class="typeName">{{ item.typeName }}</div>
 
@@ -56,6 +56,10 @@
           </div>
           <div class="date">{{ item.gmtCreate | date("mm-dd hh:MM") }}</div>
         </div>
+      </div>
+
+      <div v-else>
+        <el-image src="/noSearch.png" style="height: 500px"></el-image>
       </div>
 
     </div>
@@ -192,6 +196,8 @@ export default {
     }
   },
   created() {
+    this.records = []
+
     wordTypeApi.listAll().then(res => {
       res.data.forEach(item => {
         // 默认选中全部
@@ -208,7 +214,9 @@ export default {
   },
   mounted() {
     // 给list添加滚动事件
-    this.$refs.dataList.addEventListener("scroll", this.scroll)
+    if (this.$refs.dataList) {
+      this.$refs.dataList.addEventListener("scroll", this.scroll)
+    }
 
     console.log("进行md5加密为:" + md5('1'))
 

@@ -139,6 +139,12 @@ export default {
 <style scoped>
 
 .container {
+  /* 使用绝对布局,以及两个边框的固定,将页面容器给撑起来 */
+  position: absolute;
+  top: 0;
+  bottom: 10px;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -164,9 +170,9 @@ input {
   /*margin-top: 10px;*/
   width: 80%;
   /* 占据所有剩余空间 */
-  /*flex-grow: 1;*/
-  height: 800px;
-  overflow-y: scroll;
+  flex-grow: 1;
+  /*height: 800px;*/
+  overflow-y: auto;
   padding-right: 5px;
 }
 

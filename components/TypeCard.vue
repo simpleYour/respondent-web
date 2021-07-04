@@ -3,7 +3,6 @@
 
   <div>
     <div class="container">
-
       <div class="title">
         <nuxt-link :to="'/word/'+wordTypeId">
           {{ wordType.typeName }}
@@ -16,7 +15,7 @@
       <div>
         <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
         <div :id="'main'+wordTypeId" style="width: 400px;height:200px;" ref="main" v-show="dateCount.length"></div>
-        <div v-show="!dateCount.length" class="empty">
+        <div v-show="!dateCount.length" class="empty" @click="window.location.href = '/respondent'">
           <el-image src="/empty.png" style="width: 150px;margin: 0 auto"></el-image>
           <div>暂时还没有答题数据,快去答题吧!</div>
         </div>
@@ -25,7 +24,7 @@
       <div class="footer">
         <div>单词数:{{ wordType.wordCount }}</div>
         <div>答题记录数:{{ wordType.recordCount }}</div>
-        <div>错题数:{{ wordType.errorCount }}</div>
+        <div>错题数:{{ wordType.errorCount ? wordType.errorCount : 0 }}</div>
       </div>
     </div>
   </div>
@@ -59,7 +58,8 @@ export default {
           "typeId": ""
         }
       ],
-      myCharts: {}
+      myCharts: {},
+      window: window
     }
   },
   mounted() {
@@ -196,7 +196,8 @@ export default {
 }
 
 .empty {
-  width: 100%;
+  width: 400px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: center;
