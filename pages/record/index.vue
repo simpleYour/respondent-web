@@ -8,7 +8,17 @@
         <el-form-item label="单词本">
           <el-select v-model="query.wordTypeIds" filterable placeholder="答题笔记本" multiple clearable>
             <el-option
-              v-for="item in wordTypeData"
+              v-for="item in wordTypes"
+              :key="item.id"
+              :label="item.typeName"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="答题模式">
+          <el-select v-model="query.modes" filterable placeholder="答题笔记本" multiple clearable>
+            <el-option
+              v-for="item in modes"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -48,7 +58,11 @@
 
       <div class="list" ref="dataList" v-show="records.length">
         <div class="row" v-for="item in records">
-          <div class="typeName">{{ item.typeName }}</div>
+          <div class="typeName">{{ item.typeName }} -
+            <span class="mode-name">
+               {{ modeNameTransform(item.respondentType) }}
+            </span>
+          </div>
 
           <div class="progress">
             <el-progress :text-inside="true" :stroke-width="26"
@@ -71,12 +85,33 @@ import recordApi from "@/api/RecordApi";
 import timeFormat from "@/utils/timeFormat";
 import wordTypeApi from "@/api/WordTypeApi";
 
+/*let temp = {
+  value: item.id,
+  label: item.typeName
+}*/
+
 export default {
   name: "RecordView",
   data() {
     return {
       // 答题单词本的选择
-      wordTypeData: [],
+      wordTypes: [],
+      modes: [{
+        value: "normal",
+        label: "普通模式",
+      },
+        {
+          value: "wrongBook",
+          label: "错题本模式",
+        },
+        {
+          value: "allBook",
+          label: "整个单词本模式",
+        },
+        {
+          value: "modeInvert",
+          label: "中英文颠倒模式",
+        }],
       // 分页的相关数据
       current: 1,
       size: 30,
@@ -88,7 +123,9 @@ export default {
         "isOver": 1,
         "rankSort": undefined,
         "startDate": undefined,
-        "wordTypeIds": []
+        "wordTypeIds": [],
+        // 答题模式的范围选择
+        "modes": []
       },
       // 查询的结果,存放列表数组
       records: [{
@@ -193,21 +230,30 @@ export default {
         this.query.dateSort = false
       }
       this.search()
+    },
+    // 模式名称转化
+    modeNameTransform(value) {
+      for (let i = 0; i < this.modes.length; i++) {
+        let item = this.modes[i]
+        if (value === item.value) {
+          return item.label
+        }
+      }
     }
   },
   created() {
     this.records = []
+    // 默认选中所有的模式
+    this.modes.forEach(item => {
+      this.query.modes.push(item.value)
+    })
 
+    // 设置好单词本的选项范围以及默认选项(全选)
     wordTypeApi.listAll().then(res => {
       res.data.forEach(item => {
         // 默认选中全部
         this.query.wordTypeIds.push(item.id)
-        // 提供给用户的所有选项
-        let temp = {
-          value: item.id,
-          label: item.typeName
-        }
-        this.wordTypeData.push(temp)
+        this.wordTypes.push(item)
       })
       this.initData()
     })
@@ -267,6 +313,11 @@ export default {
 
 .date {
   margin: 0 5px;
+  color: #909399;
+}
+
+.mode-name{
+  font-size: small;
   color: #909399;
 }
 

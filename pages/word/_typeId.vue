@@ -116,53 +116,30 @@
           </template>
         </el-table-column>
         <el-table-column
+          min-width="50"
+          label="图片">
+          <template slot-scope="scope">
+            <el-image
+              style="width: 50px; height: 50px"
+              :src="scope.row.image+'?x-oss-process=image/auto-orient,1/resize,p_55/quality,q_50'"
+              :preview-src-list="[scope.row.image]">
+              <div slot="error" class="image-slot">
+                <i class="el-icon-picture-outline"></i>
+              </div>
+            </el-image>
+          </template>
+        </el-table-column>
+        <el-table-column
           label="操作"
           width="180">
           <template slot-scope="scope">
-            <el-button type="warning" @click="modifyWord(scope.row)">修改</el-button>
+            <modify-word :word="scope.row" style="display: inline-block">
+              <el-button type="warning">修改</el-button>
+            </modify-word>
             <el-button type="danger" @click="deleteWord(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <!-- 修改单词dialog -->
-      <el-dialog
-        title="修改单词"
-        :visible.sync="modifyDialog"
-        width="30%">
-        <el-form :model="currentModifyWord">
-          <el-form-item label="单词">
-            <el-input type="text" v-model="currentModifyWord.word"></el-input>
-          </el-form-item>
-          <el-form-item label="中文含义">
-            <el-input type="textarea" autosize v-model="currentModifyWord.mean"
-                      style="white-space: pre-wrap;"></el-input>
-          </el-form-item>
-          <el-form-item label="备注信息">
-            <el-input type="textarea" autosize v-model="currentModifyWord.notes"
-                      style="white-space: pre-wrap;"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-upload
-              class="upload-demo"
-              drag
-              :on-success="uploadImageSuccess"
-              :action="uploadImageUrl"
-              :headers="headers"
-              accept="image/*"
-            >
-              <i class="el-icon-upload"></i>
-              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-              <div class="el-upload__tip" slot="tip">只能上传图片，且不超过2000kb</div>
-            </el-upload>
-          </el-form-item>
-
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-        <el-button @click="modifyDialog = false">取 消</el-button>
-        <el-button type="primary" @click="doModifyWord(currentModifyWord)">确定修改</el-button>
-      </span>
-      </el-dialog>
 
       <!-- 音频播放audio -->
       <audio ref="audio" src="http://dict.youdao.com/dictvoice?audio=explore">
@@ -175,7 +152,6 @@
 
 <script>
 import WordApi from "~/api/WordApi";
-import auth from "@/utils/auth";
 
 export default {
   name: "typeId",
@@ -209,10 +185,6 @@ export default {
         "word": "",
         "wordTypeId": ""
       },
-      // 修改单词的对话框 是否显示
-      modifyDialog: false,
-      // 当前将要被修改的单词
-      currentModifyWord: {},
       // 是否正在向后端请求数据中
       loading: false,
       // 判断是否已经加载到了最后一页了
@@ -223,10 +195,7 @@ export default {
       // 最近查询的一个分页对象
       page: {},
       // 依据table的父组件的绝对布局,确定table需要展示的一个高度
-      tableHeight: 800,
-      // 上传单词图片地址
-      uploadImageUrl: WordApi.uploadImageUrl,
-      headers: {"token": auth.getToken()}
+      tableHeight: 800
     }
   },
   methods: {
@@ -260,7 +229,7 @@ export default {
     // 当点击了table中的排序字段后,调用该方法,进行一个后端服务器的排序调用
     // 被问我为什么要取obj这么个名字,要问就问element-ui的官方人员
     serviceSort(obj) {
-      console.log("接收到的要排序的属性名称为:" + obj.prop)
+      // console.log("接收到的要排序的属性名称为:" + obj.prop)
       // console.log("接收到的排序顺序为:" + obj.order)
 
       // 对这三个参数进行后端请求排序
@@ -268,7 +237,7 @@ export default {
       // 将el-table中的排序字符转化为后端所识别的排序字符
       let sortSymbol = obj.order ? obj.order === 'ascending' : undefined
 
-      console.log("排列顺序为:" + sortSymbol)
+      // console.log("排列顺序为:" + sortSymbol)
 
       // 为了增加用户的一个体验,排序时只允许同时一个参数进行排序 这里就先进行所有排序参数的清空
       this.query.countSort = undefined
@@ -291,11 +260,8 @@ export default {
     },
     playAudio(voicePath) {
       let audio = this.$refs.audio
-      // 只有当上一个音频已经播放结束了,才会去播放下一个音频
-      // if (audio.ended) {
       audio.src = voicePath
       audio.play()
-      // }
     },
     // 向后端服务器查询符合条件的数据集合
     search() {
@@ -303,19 +269,6 @@ export default {
       // 将当前页面重置回到第一页
       this.current = 1
       this.getData()
-    },
-    // 修改单词
-    modifyWord(word) {
-      // 加载dialog的数据并显示dialog
-      this.currentModifyWord = word
-      this.modifyDialog = true
-    },
-    // 执行修改单词
-    doModifyWord(word) {
-      WordApi.modify(word.id, word).then(res => {
-        this.$message({message: "修改成功!", type: "success", center: true})
-        this.modifyDialog = false
-      })
     },
     // 删除单词
     deleteWord(word) {
@@ -364,12 +317,6 @@ export default {
           }
         }
       })
-    },
-    // 上传图片成功后的回调函数
-    uploadImageSuccess(response, file, fileList) {
-      // 给被修改的单词的图片路径赋值
-      this.currentModifyWord.image = response.data
-      this.$message.success("上传成功!")
     }
   },
   created: function () {
@@ -404,10 +351,6 @@ export default {
   align-items: center;
 }
 
-/*.container > * {*/
-/*  width: 100%;*/
-/*}*/
-
 /* 播放音频图标,鼠标悬浮时的css样式 */
 .play-icon:hover {
   background-color: aquamarine;
@@ -427,6 +370,4 @@ a:visited, a:link {
 a:hover {
   text-decoration: aquamarine;
 }
-
-
 </style>

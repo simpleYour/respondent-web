@@ -73,7 +73,7 @@ export default {
       let leftOffset = (window.innerWidth - element.clientWidth) / 2
 
       // 如果窗口宽度小于 1000px 那么偏移值就设置为0,并且容器的width设置为100%
-      if (window.innerWidth < 1000) {
+      if (window.innerWidth < 1600) {
         leftOffset = 0
         element.style.width = "100%"
       } else {
