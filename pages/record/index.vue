@@ -46,7 +46,7 @@
       <div style="margin: -15px 0 3px 0;font-size: small;color: #909399">查询结果:{{ page.total ? page.total : 0 }}条
       </div>
 
-      <div class="list" ref="dataList" v-if="records.length">
+      <div class="list" ref="dataList" v-show="records.length">
         <div class="row" v-for="item in records">
           <div class="typeName">{{ item.typeName }}</div>
 
@@ -58,7 +58,7 @@
         </div>
       </div>
 
-      <div v-else>
+      <div v-show="!records.length">
         <el-image src="/noSearch.png" style="height: 500px"></el-image>
       </div>
 
@@ -70,7 +70,6 @@
 import recordApi from "@/api/RecordApi";
 import timeFormat from "@/utils/timeFormat";
 import wordTypeApi from "@/api/WordTypeApi";
-import md5 from 'js-md5'
 
 export default {
   name: "RecordView",
@@ -166,6 +165,7 @@ export default {
         if ((tableBodyDom.scrollHeight - tableBodyDom.clientHeight - tableBodyDom.scrollTop) < 50) {
           // 进行一个节流限制,如果是正在加载中,则不进行数据的请求加载
           if (!this.loading) {
+            console.log("开始判断加载下一页数据")
             ++this.current
             if (this.isEnd && this.current > 1) {
               // 如果已经加载到了最后一页,则不继续向下加载了
@@ -214,12 +214,7 @@ export default {
   },
   mounted() {
     // 给list添加滚动事件
-    if (this.$refs.dataList) {
-      this.$refs.dataList.addEventListener("scroll", this.scroll)
-    }
-
-    console.log("进行md5加密为:" + md5('1'))
-
+    this.$refs.dataList.addEventListener("scroll", this.scroll)
   }
 }
 </script>

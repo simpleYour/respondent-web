@@ -140,6 +140,10 @@ export default {
           value: 50,
           label: "50题",
         },
+        {
+          value: 100,
+          label: "100题",
+        },
       ],
       // 答题日期范围的选择
       dateData: [
