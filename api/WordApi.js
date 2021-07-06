@@ -42,9 +42,10 @@ export default {
     // 直接打开这个下载连接
     window.open(`${request.baseURL}${BASE_URL}/template`)
   },
+  // 上传excel解析文件地址
   uploadURL(typeId) {
     return `${request.baseURL}${BASE_URL}/upload/${typeId}`
-  }
-
-
+  },
+  // 上传单词图片地址
+  uploadImageUrl: `${request.baseURL}/oss/file/upload`
 }

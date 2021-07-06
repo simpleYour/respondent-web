@@ -43,10 +43,7 @@
 
           </add-word>
         </el-form-item>
-
-
       </el-form>
-
 
       <div style="margin: -15px 0 3px 0;font-size: small;color: #909399">查询结果:{{ page.total }}条</div>
 
@@ -145,6 +142,21 @@
             <el-input type="textarea" autosize v-model="currentModifyWord.notes"
                       style="white-space: pre-wrap;"></el-input>
           </el-form-item>
+          <el-form-item>
+            <el-upload
+              class="upload-demo"
+              drag
+              :on-success="uploadImageSuccess"
+              :action="uploadImageUrl"
+              :headers="headers"
+              accept="image/*"
+            >
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__tip" slot="tip">只能上传图片，且不超过2000kb</div>
+            </el-upload>
+          </el-form-item>
+
         </el-form>
         <span slot="footer" class="dialog-footer">
         <el-button @click="modifyDialog = false">取 消</el-button>
@@ -163,6 +175,7 @@
 
 <script>
 import WordApi from "~/api/WordApi";
+import auth from "@/utils/auth";
 
 export default {
   name: "typeId",
@@ -210,7 +223,10 @@ export default {
       // 最近查询的一个分页对象
       page: {},
       // 依据table的父组件的绝对布局,确定table需要展示的一个高度
-      tableHeight: 800
+      tableHeight: 800,
+      // 上传单词图片地址
+      uploadImageUrl: WordApi.uploadImageUrl,
+      headers: {"token": auth.getToken()}
     }
   },
   methods: {
@@ -348,6 +364,12 @@ export default {
           }
         }
       })
+    },
+    // 上传图片成功后的回调函数
+    uploadImageSuccess(response, file, fileList) {
+      // 给被修改的单词的图片路径赋值
+      this.currentModifyWord.image = response.data
+      this.$message.success("上传成功!")
     }
   },
   created: function () {
