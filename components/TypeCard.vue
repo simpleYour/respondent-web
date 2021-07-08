@@ -13,7 +13,7 @@
         </div>
       </div>
       <div>
-        <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+        <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM  由于id属性的唯一性,所以这里加上一个typeId保证唯一性  -->
         <div :id="'main'+wordTypeId" style="width: 400px;height:200px;" ref="main" v-show="dateCount.length"></div>
         <div v-show="!dateCount.length" class="empty" @click="window.location.href = '/respondent'">
           <el-image src="/empty.png" style="width: 150px;margin: 0 auto"></el-image>
@@ -67,22 +67,18 @@ export default {
     let element = document.getElementById("main" + this.wordTypeId)
 
     if (element) {
-      // myCharts = echarts.init(element);
       this.myCharts = echarts.init(element);
-    } else {
-      console.log("这个单词本:" + this.wordTypeId + "还没有答题记录信息")
     }
   },
   created() {
-
     if (this.wordTypeId) {
       this.initData()
     } else {
+      // 测试的时候,传递过来的数据有延迟,这里就设置一个定时器来保证
       setTimeout(() => {
         this.initData()
       }, 200)
     }
-
   },
   methods: {
     // 调用一次组件的初始化信息

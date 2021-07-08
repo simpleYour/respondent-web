@@ -1,8 +1,6 @@
 <template>
   <div>
-
     <div class="container">
-
       <div class="types">
         <type-card v-for="item in types" :word-type-id="item.id"></type-card>
         <el-image src="/add.png" style="width: 80px; height: 80px;margin-left: 160px;margin-top: 20px"

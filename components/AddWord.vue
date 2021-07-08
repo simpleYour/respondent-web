@@ -1,8 +1,6 @@
 <template>
   <!-- 这是添加单词的一个组件 单独把这个组件给抽离出来,也是为了轻松方便的控制和扩展管理  -->
-
   <div>
-
     <div class="horizontal">
       <div @click="showDialog = true">
         <!-- 给到一个slot方便父组件自定义  这里使用匿名slot,默认插入到这里,也是默认为添加单个单词 -->
@@ -162,7 +160,6 @@ export default {
 </script>
 
 <style scoped>
-
 
 input {
   text-align: center;

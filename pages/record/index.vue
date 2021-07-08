@@ -85,11 +85,6 @@ import recordApi from "@/api/RecordApi";
 import timeFormat from "@/utils/timeFormat";
 import wordTypeApi from "@/api/WordTypeApi";
 
-/*let temp = {
-  value: item.id,
-  label: item.typeName
-}*/
-
 export default {
   name: "RecordView",
   data() {

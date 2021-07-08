@@ -32,15 +32,12 @@
         <el-form-item>
           <add-word :type-id="typeId">
             <el-button type="primary">添加单词</el-button>
-
             <div slot="batch">
               <el-button>上传<i class="el-icon-upload el-icon--right"></i></el-button>
             </div>
-
             <div slot="template">
               <el-button>模板下载<i class="el-icon-download el-icon--right"></i></el-button>
             </div>
-
           </add-word>
         </el-form-item>
       </el-form>

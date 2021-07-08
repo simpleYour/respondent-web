@@ -5,8 +5,6 @@
     <div class="main">
       <!-- 已回答内容区域 -->
       <div class="answer" ref="scroll">
-        <!--      <answer-card :id="result.current.id" :question="result.current.word" :answer="result.current.mean"
-                           :is-play="true" :voice-url="result.current.voicePath"></answer-card>-->
         <div v-for="item in history">
           <answer-card :id="item.id" :question="item.question" :answer="item.answer" :user-answer="item.userAnswer"
                        :is-play="item.isPlay" :voice-path="item.voicePath" :is-right="item.isRight"
@@ -30,7 +28,7 @@
         v-model="isPlay" style="margin-bottom: 5px"
         active-text="是否自动播放音频">
       </el-switch>
-<!--      答题的模式为:<span class="highlight">{{ result.mode }}</span>-->
+      <!--      答题的模式为:<span class="highlight">{{ result.mode }}</span>-->
     </div>
     <!-- 音频播放audio -->
     <audio ref="audio" src="">

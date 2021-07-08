@@ -94,19 +94,8 @@ export default {
     },
     // 跳转到单词网的解释页面
     linkToWord() {
-      // 这里需要后期去修改成后端提供的链接
-      // let url = 'http://www.youdao.com/w/eng/' + this.answer
       window.open(this.link)
     }
-  },
-  created() {
-
-  },
-  mounted() {
-    // 创建初始化该组件的时候,如果设置为可以播放,则直接去进行播放
-    /*    if (this.isPlay) {
-          this.playAudio()
-        }*/
   },
   watch: {
     isRight(val, oldVal) {

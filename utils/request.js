@@ -9,7 +9,7 @@ baseURL = 'http://online.respondent.top:9001/respondent2' // api服务器端的b
 // 创建axios实例
 const service = axios.create({
   baseURL: baseURL,
-  timeout: 10000 // 请求超时时间
+  timeout: 5000 // 请求超时时间
 })
 
 // 这里进行一个赋值,方便后面的地方进行调用

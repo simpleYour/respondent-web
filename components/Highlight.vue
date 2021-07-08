@@ -26,14 +26,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-/* 那个高亮的文字,在这里使用class无效,应该是被覆盖了 */
-.mark1 {
-  font-weight: bold;
-  font-size: large;
-  background-color: red;
-}
-
-</style>

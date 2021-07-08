@@ -45,8 +45,6 @@ export default {
       query: {
         "dateSort": false,
         "endDate": "",
-        // 默认查询已结束的答题记录信息
-        "isOver": 1,
         "rankSort": undefined,
         "startDate": "",
         "wordTypeIds": []
@@ -64,12 +62,6 @@ export default {
         "typeName": "",
         "wordTypeId": []
       }],
-      // 是否正在向后端请求数据中
-      loading: false,
-      // 判断是否已经加载到了最后一页了
-      isEnd: false,
-      // 最近查询的一个分页对象
-      page: {},
       customColors: [
         {color: '#f56c6c', percentage: 20},
         {color: '#e6a23c', percentage: 40},
@@ -82,14 +74,9 @@ export default {
   methods: {
     // 依据相关查询条件,查询相关的内容
     getData() {
-      this.loading = true
       // 向后端去请求数据
       recordApi.searchVo(this.query, this.current, this.size).then(res => {
         this.records.push(...res.data.records)
-        // 以此判断是否已经到了最后一页
-        this.isEnd = res.data.current >= res.data.pages
-        this.page = res.data
-        this.loading = false
       })
     },
     //进行条件查询搜索
@@ -97,8 +84,6 @@ export default {
       // 先将相关的数据重置,然后再去请求相关的数据
       this.records = []
       this.current = 1
-      this.isEnd = false
-
       // 请求相关的数据
       this.getData()
     },

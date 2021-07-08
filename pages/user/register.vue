@@ -109,11 +109,6 @@ export default {
           })
         }
       })
-
-      // 登录成功则跳转到index首页
-      /*      UserApi.login(this.user).then(res => {
-              this.$router.push({path: "/"})
-            })*/
     }
   }
 }

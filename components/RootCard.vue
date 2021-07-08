@@ -3,7 +3,6 @@
   <div>
     <div class="container">
       <div class="header" @click="toLink">
-        <!--        {{ word }}-->
         <highlight :content="word" :high-content="highContent"></highlight>
 
         <div class="type">{{ typeName }}</div>
