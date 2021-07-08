@@ -3,7 +3,7 @@ import auth from "@/utils/auth";
 import {Message, MessageBox} from 'element-ui'
 
 let baseURL = 'http://localhost:8081/respondent2' // api本地端的base_url
-// baseURL = 'http://online.respondent.top:9001/respondent2' // api服务器端的base_url
+baseURL = 'http://online.respondent.top:9001/respondent2' // api服务器端的base_url
 
 
 // 创建axios实例

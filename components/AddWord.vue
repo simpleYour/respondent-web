@@ -27,7 +27,7 @@
       <div class="form">
 
         <div class="item"><span>&nbsp;&nbsp;单&nbsp;&nbsp;&nbsp;词&nbsp;&nbsp;</span>
-<!--          <input type="text" v-model="word.word" placeholder="回车获取网络解释" @keyup.enter="getWebMean"></input>-->
+          <!--          <input type="text" v-model="word.word" placeholder="回车获取网络解释" @keyup.enter="getWebMean"></input>-->
           <el-input type="text" v-model="word.word" placeholder="回车获取网络解释" @change="getWebMean"></el-input>
         </div>
         <div class="item"><span>中文解释</span>
@@ -57,6 +57,7 @@
         style="margin: 0 auto"
         name="file"
         :auto-upload="false"
+        :headers="headers"
         accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         :on-success="uploadSuccess"
         :action="baseURL">
@@ -75,6 +76,7 @@
 
 <script>
 import wordApi from "@/api/WordApi";
+import auth from "@/utils/auth";
 
 export default {
   name: "AddWord",
@@ -97,7 +99,9 @@ export default {
         "wordTypeId": this.typeId
       },
       // 上传文件的路径地址
-      baseURL: wordApi.uploadURL(this.typeId)
+      baseURL: wordApi.uploadURL(this.typeId),
+      // 上传的token请求头
+      headers: {"token": auth.getToken()}
     }
   },
   props: {
