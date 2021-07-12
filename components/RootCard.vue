@@ -29,7 +29,9 @@ export default {
   methods: {
     // 链接跳转到对应的词根词缀页面
     toLink() {
-      window.open(this.link)
+      let link = "https://www.etymonline.com/word/" + this.word
+
+      window.open(link)
     }
   },
   computed: {

@@ -49,7 +49,7 @@
         :data="records"
         style="width: 100%;"
         :fit="true"
-        max-height="800"
+        :max-height="800"
         ref="table"
         @sort-change="serviceSort"
         stripe>

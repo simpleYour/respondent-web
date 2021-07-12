@@ -21,6 +21,7 @@
     </div>
 
     <div class="title-show">
+      惩罚次数<el-input-number v-model="punishment.number" :step="1" size="mini" style="margin: 0 2px" :min="1" :max="100"></el-input-number>
       剩余题目数: <span class="highlight">{{ result.remain }}</span>
       正确次数:<span class="highlight">{{ result.rightCount }}</span>
       错误次数:<span class="highlight">{{ result.wrongCount }} </span>
