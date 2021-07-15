@@ -40,7 +40,8 @@ export default {
   // 下载批量添加单词的模板
   downloadTemplate() {
     // 直接打开这个下载连接
-    window.open(`${request.baseURL}${BASE_URL}/template`)
+    // window.open(`${request.baseURL}${BASE_URL}/template`)
+    window.open(`https://online-coking.oss-cn-hangzhou.aliyuncs.com/BatchTemplate.xlsx`)
   },
   // 上传excel解析文件地址
   uploadURL(typeId) {

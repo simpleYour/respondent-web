@@ -13,9 +13,12 @@
 - [H5端代码仓库地址](https://github.com/simpleYour/respondent-web-mobile)
 - [后端API文档地址](http://online.respondent.top:9001/doc.html)
 
-### 项目地址
+### 项目访问地址
 - [PC前端](http://respondent.top)
 - [H5端](http://respondent.top/mobile/)
+
+### 作者视频介绍
+- [视频讲解](https://www.bilibili.com/video/BV1gX4y1A7h3/)
 
 ## 后端说明
 
