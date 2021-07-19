@@ -51,6 +51,7 @@
         :fit="true"
         :max-height="800"
         ref="table"
+        row-key="id"
         @sort-change="serviceSort"
         stripe>
         <el-table-column label="序号" align="center">

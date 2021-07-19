@@ -23,6 +23,12 @@
           <el-input type="textarea" autosize v-model="word.notes"
                     style="white-space: pre-wrap;"></el-input>
         </el-form-item>
+        <el-form-item label="答题次数">
+          <el-input-number v-model="word.count" :step="1" :min="0" :max="100"></el-input-number>
+        </el-form-item>
+        <el-form-item label="错误次数">
+          <el-input-number v-model="word.ecount" :step="1" :min="0" :max="100"></el-input-number>
+        </el-form-item>
         <el-form-item>
           <el-upload
             class="upload-demo"
