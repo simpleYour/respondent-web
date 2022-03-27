@@ -31,7 +31,7 @@ export default {
     toLink() {
       let link = "https://www.etymonline.com/word/" + this.word
 
-      window.open(link)
+      window.open(this.link)
     }
   },
   computed: {

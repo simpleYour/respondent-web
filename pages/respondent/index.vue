@@ -102,6 +102,7 @@
 <script>
 import wordTypeApi from "@/api/WordTypeApi";
 import respondentApi from "@/api/RespondentApi";
+import cacheUtils from "@/utils/CacheUtils"
 
 export default {
   name: "index",
@@ -181,6 +182,8 @@ export default {
         dateScope: 10000,
         typeId: ""
       },
+      //将用户的选择进行缓存起来,缓存的key的名称
+      cacheKey: "",
       activeName: '', //折叠面板默认展开
     }
   },
@@ -188,6 +191,9 @@ export default {
     // 开始答题
     startRespondent() {
       // 进行请求参数的效验
+
+      //保存选择记录
+      cacheUtils.addCache(this.cacheKey, this.respondentOption)
 
       if (!this.respondentOption.typeId) {
         this.$message.error("您还没有单词本,快去创建一个单词本吧!")
@@ -216,8 +222,18 @@ export default {
           this.wordTypeData.push(temp)
         })
         // 选择第一个单词本
-        this.respondentOption.typeId = res.data[0].id
+        if (!this.respondentOption.typeId) {
+          this.respondentOption.typeId = res.data[0].id
+        }
+
       })
+
+      //加载上一次的选择记录
+      let tempCache = cacheUtils.getCache(this.cacheKey)
+      if (tempCache) {
+        this.respondentOption = tempCache
+      }
+
     },
     downloadExcel() {
       if (!this.respondentOption.typeId) {
